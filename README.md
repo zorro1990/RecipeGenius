@@ -1,43 +1,44 @@
-# 🏥 RecipeGenius - 健康关怀系统
+# RecipeGenius - Health Care System
 
-🌟 根据食材生成菜谱，过滤过敏源，排除疾病敏感食材
+Generate recipes based on ingredients, filter allergens, and exclude disease-sensitive foods.
 
-## 🎯 功能特点
+## Features
 
-- ✨ **健康状况管理**：支持痛风、糖尿病、高血压等常见疾病的饮食限制
-- ✨ **智能食材过滤**：根据健康情况与过敏原自动过滤有害食材
-- ✨ **健康建议系统**：提供专业的饮食建议和健康指导：
-  - 🦐 痛风患者：严格过滤蛤蜊、青口等高嘌呤海鲜
-  - 💙 糖尿病患者：限制高糖食材，控制血糖指数
-  - 🧂 高血压患者：避免高盐食品，控制钠盐摄入
-  - 💚 胃病患者：完善温和易消化功能管理
+- **Health Condition Management**: Support dietary restrictions for gout, diabetes, hypertension, etc.
+- **Smart Ingredient Filtering**: Automatically filter harmful ingredients based on health conditions
+- **Health Advice System**: Provide professional dietary advice and health guidance:
+  - Gout patients: Strictly filter shellfish and high-purine seafood
+  - Diabetes patients: Limit high-sugar ingredients, control blood sugar index
+  - Hypertension patients: Avoid high-salt foods, control sodium intake
+  - Gastritis patients: Provide mild and easy-to-digest options
 
-## 🎯 使用指南
+## Usage Guide
 
-1. 在偏好设置中可选择您的健康状况
-2. 添加食材：蛤蜊、青口、西兰花、番茄
-3. 生成菜谱：系统自动过滤有害食材
-4. 查看建议：在"健康建议"标签页查看专业指导
-5. 安全烹饪：使用过滤后的安全食材制作菜谱
+1. Select your health conditions in preferences
+2. Add ingredients: clams, mussels, broccoli, tomatoes
+3. Generate recipes: system automatically filters harmful ingredients
+4. View advice: check professional guidance in the "Health Advice" tab
+5. Safe cooking: use filtered safe ingredients to prepare meals
 
-## 🚨 重要提醒
+## Important Notes
 
-- 解决了痛风患者的敏感食材问题，请更新有效的AI密钥，或者在设置中配置。
-- 在多个服务器之间切换，可能会出现异常。
+- Fixed sensitive ingredient issues for gout patients
+- Update valid AI key in settings if needed
+- Switching between multiple servers may cause anomalies
 
-## 💻 技术支持
+## Technology Stack
 
 - Next.js 14
 - TypeScript
 - Tailwind CSS
 - Shadcn/ui
 - Lucide React
-- Playwright 测试
+- Playwright testing
 
-## 💡 开发者
+## Developer
 
 [zorro1990](https://github.com/zorro1990)
 
-## 📜 许可证
+## License
 
 MIT License
