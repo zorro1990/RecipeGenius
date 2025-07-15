@@ -1,0 +1,3 @@
+export const production = {"DEEPSEEK_API_KEY":"sk-f54af0cb306b4cc58627d5164874b8e7","DOUBAO_API_KEY":"08091838-56bc-40f3-a947-a84de8cd78b9","DOUBAO_ENDPOINT_ID":"doubao-seed-1-6-250615","QWEN_API_KEY":"your_qwen_api_key_here","GLM_API_KEY":"your_glm_api_key_here","NEXT_PUBLIC_APP_URL":"http://localhost:3001","NODE_ENV":"development"};
+export const development = {"DEEPSEEK_API_KEY":"sk-f54af0cb306b4cc58627d5164874b8e7","DOUBAO_API_KEY":"08091838-56bc-40f3-a947-a84de8cd78b9","DOUBAO_ENDPOINT_ID":"doubao-seed-1-6-250615","QWEN_API_KEY":"your_qwen_api_key_here","GLM_API_KEY":"your_glm_api_key_here","NEXT_PUBLIC_APP_URL":"http://localhost:3001","NODE_ENV":"development"};
+export const test = {};

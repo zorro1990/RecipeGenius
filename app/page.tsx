@@ -1,103 +1,117 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { ChefHat, Sparkles, Settings } from 'lucide-react';
+import Link from 'next/link';
+import { APISettingsModal } from '@/components/api-settings-modal';
+
+export default function HomePage() {
+  const [isAPISettingsOpen, setIsAPISettingsOpen] = useState(false);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <div className="min-h-screen relative overflow-hidden">
+      <div className="fixed inset-0 z-0">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-fixed"
+          style={{
+            backgroundImage: 'url(https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80)'
+          }}
         />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+        <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 via-transparent to-red-500/20" />
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <div className="relative z-10">
+        <header className="container mx-auto px-4 py-6">
+          <nav className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ChefHat className="size-8 text-orange-400" />
+              <span className="text-2xl font-bold text-white drop-shadow-lg">RecipeGenius</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-6">
+                <Link href="/ingredients" className="text-white/90 hover:text-white transition-colors font-medium drop-shadow">
+                  开始创作
+                </Link>
+                <Link href="/api-status" className="text-white/90 hover:text-white transition-colors font-medium drop-shadow">
+                  API状态
+                </Link>
+                <Link href="/about" className="text-white/90 hover:text-white transition-colors font-medium drop-shadow">
+                  关于我们
+                </Link>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsAPISettingsOpen(true)}
+                className="text-white/90 hover:text-white hover:bg-white/10 transition-all duration-200"
+                title="API设置"
+              >
+                <Settings className="size-5" />
+              </Button>
+            </div>
+          </nav>
+        </header>
+
+        <section className="container mx-auto px-4 py-20 text-center">
+          <div className="max-w-5xl mx-auto">
+            <div className="relative">
+              <div className="absolute inset-0 bg-white/10 backdrop-blur-sm rounded-3xl border border-white/20 shadow-2xl" />
+              <div className="relative p-8 md:p-16">
+                <ChefHat className="size-24 mx-auto mb-8 text-orange-400 drop-shadow-lg animate-pulse" />
+                <h1 className="text-6xl md:text-8xl font-bold mb-8 text-white drop-shadow-2xl">
+                  RecipeGenius
+                </h1>
+                <p className="text-2xl md:text-3xl text-white/95 mb-4 max-w-3xl mx-auto drop-shadow-lg font-medium">
+                  家里有食材不知道做什么？
+                </p>
+                <p className="text-lg md:text-xl text-white/80 mb-12 max-w-2xl mx-auto drop-shadow">
+                  30秒AI智能分析，把你的食材变成专业菜谱 • 完全免费 • 无需注册
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8">
+                  <Link href="/ingredients">
+                    <Button size="lg" className="text-xl px-12 py-6 bg-orange-500 hover:bg-orange-600 shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-110 font-bold">
+                      🚀 立即免费体验 <Sparkles className="ml-3 size-6" />
+                    </Button>
+                  </Link>
+                  <Link href="/examples">
+                    <Button variant="outline" size="lg" className="text-lg px-8 py-6 bg-white/20 border-white/30 text-white hover:bg-white/30 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                      查看成功案例
+                    </Button>
+                  </Link>
+                </div>
+
+                <div className="flex flex-wrap justify-center gap-8 text-white/90 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">⚡</span>
+                    <span>已生成 <strong className="text-orange-300">50,000+</strong> 道菜谱</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">👥</span>
+                    <span><strong className="text-orange-300">10,000+</strong> 用户信赖</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">⭐</span>
+                    <span><strong className="text-orange-300">4.9</strong> 用户评分</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* API设置模态框 */}
+      <APISettingsModal
+        isOpen={isAPISettingsOpen}
+        onClose={() => setIsAPISettingsOpen(false)}
+        onKeysUpdated={() => {
+          // 可以在这里添加更新后的回调逻辑
+          console.log('API密钥已更新');
+        }}
+      />
     </div>
   );
 }

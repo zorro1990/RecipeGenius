@@ -1,0 +1,23 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/api/analyze-nutrition/route": "/api/analyze-nutrition",
+  "/api/generate-recipe/route": "/api/generate-recipe",
+  "/api/frontend-api-status/route": "/api/frontend-api-status",
+  "/api/mock-recipe/route": "/api/mock-recipe",
+  "/api/simple-test/route": "/api/simple-test",
+  "/api/test-ai/route": "/api/test-ai",
+  "/api/test-doubao/route": "/api/test-doubao",
+  "/api/test-api-key/route": "/api/test-api-key",
+  "/api/test-gemini/route": "/api/test-gemini",
+  "/favicon.ico/route": "/favicon.ico",
+  "/api/recognize-ingredients/route": "/api/recognize-ingredients",
+  "/api/upload-image/route": "/api/upload-image",
+  "/api/health/route": "/api/health",
+  "/api-status/page": "/api-status",
+  "/debug/page": "/debug",
+  "/examples/[id]/page": "/examples/[id]",
+  "/ingredients/page": "/ingredients",
+  "/examples/page": "/examples",
+  "/page": "/",
+  "/recipe/page": "/recipe"
+}

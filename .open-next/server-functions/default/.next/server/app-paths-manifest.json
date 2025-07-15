@@ -1,0 +1,23 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/analyze-nutrition/route": "app/api/analyze-nutrition/route.js",
+  "/api/generate-recipe/route": "app/api/generate-recipe/route.js",
+  "/api/frontend-api-status/route": "app/api/frontend-api-status/route.js",
+  "/api/mock-recipe/route": "app/api/mock-recipe/route.js",
+  "/api/simple-test/route": "app/api/simple-test/route.js",
+  "/api/test-ai/route": "app/api/test-ai/route.js",
+  "/api/test-doubao/route": "app/api/test-doubao/route.js",
+  "/api/test-api-key/route": "app/api/test-api-key/route.js",
+  "/api/test-gemini/route": "app/api/test-gemini/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/api/recognize-ingredients/route": "app/api/recognize-ingredients/route.js",
+  "/api/upload-image/route": "app/api/upload-image/route.js",
+  "/api/health/route": "app/api/health/route.js",
+  "/api-status/page": "app/api-status/page.js",
+  "/debug/page": "app/debug/page.js",
+  "/examples/[id]/page": "app/examples/[id]/page.js",
+  "/ingredients/page": "app/ingredients/page.js",
+  "/examples/page": "app/examples/page.js",
+  "/page": "app/page.js",
+  "/recipe/page": "app/recipe/page.js"
+}

@@ -1,0 +1,27 @@
+# Cloudflare Workers配置文件
+name = "recipe-genius"
+main = ".open-next/worker.js"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# 静态资源配置
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+# 开发环境配置
+[env.development]
+name = "recipe-genius-dev"
+
+# 环境变量配置
+[vars]
+NODE_ENV = "production"
+
+# 敏感环境变量（需要通过wrangler secret设置）
+# 这些变量不应该直接写在配置文件中，而是通过命令行设置：
+# wrangler secret put DEEPSEEK_API_KEY
+# wrangler secret put DOUBAO_API_KEY
+# wrangler secret put DOUBAO_ENDPOINT_ID
+# wrangler secret put QWEN_API_KEY
+# wrangler secret put GLM_API_KEY
+# wrangler secret put GOOGLE_API_KEY
