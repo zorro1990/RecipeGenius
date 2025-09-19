@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { testAIConnection, getProviderStatus } from '@/lib/ai-service';
-import { getStoredAPIKeys } from '@/lib/api-key-storage';
 
 export async function GET() {
   try {
@@ -20,20 +19,13 @@ export async function GET() {
     };
 
     // 检查前端存储的API密钥（仅在客户端请求时）
-    let frontendStatus = {};
-    try {
-      // 注意：这里无法直接访问localStorage，因为这是服务端代码
-      // 前端状态将通过客户端JavaScript获取
-      frontendStatus = {
-        note: '前端API密钥状态需要通过客户端JavaScript获取',
-        available: '请使用新的API设置界面管理前端密钥'
-      };
-    } catch (error) {
-      frontendStatus = { error: '无法获取前端API密钥状态' };
-    }
+    const frontendStatus = {
+      note: '前端API密钥状态需要通过客户端JavaScript获取',
+      available: '请使用新的API设置界面管理前端密钥'
+    };
 
     // 生成配置建议
-    const suggestions = [];
+    const suggestions: string[] = [];
     if (providerStatus.configured === 0) {
       suggestions.push('🔑 请配置至少一个AI提供商的API密钥');
       suggestions.push('💡 推荐使用新的前端API设置界面（点击首页右上角设置图标）');

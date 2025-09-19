@@ -1,4 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+
+interface GeminiResponse {
+  candidates?: Array<{
+    content?: {
+      parts?: Array<{
+        text?: string;
+      }>;
+    };
+  }>;
+}
 
 export async function GET() {
   try {
@@ -47,23 +57,24 @@ export async function GET() {
       });
     }
 
-    const data = await response.json();
+    const data = await response.json() as GeminiResponse;
     console.log('API响应数据:', data);
 
     return NextResponse.json({
       success: true,
       message: 'API连接成功',
-      response: (data as any).candidates?.[0]?.content?.parts?.[0]?.text || 'No response text',
+      response: data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response text',
       status: response.status
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('测试API错误:', error);
-    
-    let errorMessage = error.message || '未知错误';
-    let suggestions = [];
-    
-    if (error.name === 'AbortError') {
+
+    const fallbackError = error instanceof Error ? error : new Error('未知错误');
+    let errorMessage = fallbackError.message;
+    const suggestions: string[] = [];
+
+    if (fallbackError.name === 'AbortError') {
       errorMessage = '请求超时';
       suggestions.push('网络连接可能较慢，请检查网络');
     } else if (errorMessage.includes('fetch')) {
@@ -77,7 +88,7 @@ export async function GET() {
       error: '连接失败',
       details: errorMessage,
       suggestions,
-      errorType: error.name
+      errorType: fallbackError.name
     });
   }
 }

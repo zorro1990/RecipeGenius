@@ -1,7 +1,6 @@
-import { Recipe, UserPreferences, NutritionInfo } from './types';
-import { extractJSON, safeJSONParse, generateId } from './utils';
+import { FrontendApiKeys } from './types';
 import { getStoredAPIKeys, type StoredAPIKeys } from './api-key-storage';
-import { getSecureEnvVar, isCloudflareWorkers, log } from './cloudflare-utils';
+import { getSecureEnvVar, log } from './cloudflare-utils';
 import { createDoubaoVisionClient, IngredientRecognitionResult } from './doubao-vision';
 
 // AI提供商配置
@@ -13,8 +12,68 @@ export interface AIProvider {
   headers: Record<string, string>;
 }
 
+interface GeminiAPIResponse {
+  candidates?: Array<{
+    content?: {
+      parts?: Array<{ text?: string }>;
+    };
+  }>;
+  error?: {
+    message?: string;
+  };
+}
+
+interface QwenAPIResponse {
+  output?: {
+    text?: string;
+  };
+  message?: string;
+}
+
+interface OpenAIStyleResponse {
+  choices?: Array<{
+    message?: {
+      content?: string;
+    };
+  }>;
+  error?: {
+    message?: string;
+  };
+  message?: string;
+}
+
+function omitFrontendApiKey(frontendApiKeys: FrontendApiKeys | undefined, providerName: string): FrontendApiKeys | undefined {
+  if (!frontendApiKeys) {
+    return undefined;
+  }
+
+  const updated: FrontendApiKeys = { ...frontendApiKeys };
+
+  switch (providerName) {
+    case 'deepseek':
+      delete updated.deepseek;
+      break;
+    case 'doubao':
+      delete updated.doubao;
+      break;
+    case 'qwen':
+      delete updated.qwen;
+      break;
+    case 'glm':
+      delete updated.glm;
+      break;
+    case 'gemini':
+      delete updated.gemini;
+      break;
+    default:
+      break;
+  }
+
+  return updated;
+}
+
 // 获取可用的AI提供商（支持前端动态API密钥和Cloudflare Workers）
-export function getAvailableProviders(frontendApiKeys?: any): AIProvider[] {
+export function getAvailableProviders(frontendApiKeys?: FrontendApiKeys): AIProvider[] {
   const providers: AIProvider[] = [];
 
   // 获取前端存储的API密钥
@@ -127,7 +186,7 @@ export function getAvailableProviders(frontendApiKeys?: any): AIProvider[] {
 }
 
 // 获取菜谱生成专用的AI提供商（排除豆包，除非用户明确选择）
-export function getRecipeAIProviders(frontendApiKeys?: any, preferredProvider?: string): AIProvider[] {
+export function getRecipeAIProviders(frontendApiKeys?: FrontendApiKeys, preferredProvider?: string): AIProvider[] {
   const allProviders = getAvailableProviders(frontendApiKeys);
 
   // 过滤掉豆包（除非明确指定为首选）
@@ -168,7 +227,7 @@ export function getRecipeAIProviders(frontendApiKeys?: any, preferredProvider?: 
 }
 
 // 菜谱生成专用AI调用函数
-export async function callRecipeAI(prompt: string, frontendApiKeys?: any, preferredProvider?: string): Promise<string> {
+export async function callRecipeAI(prompt: string, frontendApiKeys?: FrontendApiKeys, preferredProvider?: string): Promise<string> {
   const providers = getRecipeAIProviders(frontendApiKeys, preferredProvider);
 
   if (providers.length === 0) {
@@ -179,7 +238,7 @@ export async function callRecipeAI(prompt: string, frontendApiKeys?: any, prefer
 }
 
 // 通用AI调用函数
-export async function callAI(prompt: string, frontendApiKeys?: any): Promise<string> {
+export async function callAI(prompt: string, frontendApiKeys?: FrontendApiKeys): Promise<string> {
   const providers = getAvailableProviders(frontendApiKeys);
   
   if (providers.length === 0) {
@@ -190,109 +249,90 @@ export async function callAI(prompt: string, frontendApiKeys?: any): Promise<str
 }
 
 // 执行AI调用的通用函数
-async function executeAICall(providers: AIProvider[], prompt: string, frontendApiKeys?: any): Promise<string> {
-  // 使用第一个可用的提供商
-  const selectedProvider = providers[0];
-  
-  try {
-    let response: Response;
-    let responseData: any;
+async function executeAICall(providers: AIProvider[], prompt: string, frontendApiKeys?: FrontendApiKeys): Promise<string> {
+  const [selectedProvider, ...remainingProviders] = providers;
+  if (!selectedProvider) {
+    throw new Error('没有可用的AI提供商');
+  }
 
+  try {
     if (selectedProvider.name === 'gemini') {
-      // Google Gemini特殊处理
       const requestBody = {
         contents: [{
-          parts: [{ text: prompt }]
-        }]
+          parts: [{ text: prompt }],
+        }],
       };
 
-      response = await fetch(`${selectedProvider.baseUrl}?key=${selectedProvider.apiKey}`, {
+      const response = await fetch(`${selectedProvider.baseUrl}?key=${selectedProvider.apiKey}`, {
         method: 'POST',
         headers: selectedProvider.headers,
         body: JSON.stringify(requestBody),
-        signal: AbortSignal.timeout(60000) // 增加到60秒
+        signal: AbortSignal.timeout(60000),
       });
 
-      responseData = await response.json();
-      
+      const responseData = await response.json() as GeminiAPIResponse;
       if (!response.ok) {
         throw new Error(`Gemini API错误: ${responseData.error?.message || '未知错误'}`);
       }
 
       return responseData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    }
 
-    } else if (selectedProvider.name === 'qwen') {
-      // 通义千问特殊处理
+    if (selectedProvider.name === 'qwen') {
       const requestBody = {
         model: selectedProvider.model,
         input: {
-          messages: [
-            { role: 'user', content: prompt }
-          ]
+          messages: [{ role: 'user', content: prompt }],
         },
         parameters: {
           temperature: 0.7,
-          max_tokens: 2000
-        }
+          max_tokens: 2000,
+        },
       };
 
-      response = await fetch(selectedProvider.baseUrl, {
+      const response = await fetch(selectedProvider.baseUrl, {
         method: 'POST',
         headers: selectedProvider.headers,
         body: JSON.stringify(requestBody),
-        signal: AbortSignal.timeout(30000)
+        signal: AbortSignal.timeout(30000),
       });
 
-      responseData = await response.json();
-      
+      const responseData = await response.json() as QwenAPIResponse;
       if (!response.ok) {
         throw new Error(`通义千问API错误: ${responseData.message || '未知错误'}`);
       }
 
       return responseData.output?.text || '';
-
-    } else {
-      // OpenAI兼容格式 (豆包、DeepSeek、智谱AI)
-      const requestBody = {
-        model: selectedProvider.model,
-        messages: [
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 2000
-      };
-
-      response = await fetch(selectedProvider.baseUrl, {
-        method: 'POST',
-        headers: selectedProvider.headers,
-        body: JSON.stringify(requestBody),
-        signal: AbortSignal.timeout(60000) // 增加到60秒
-      });
-
-      responseData = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(`${selectedProvider.name} API错误: ${responseData.error?.message || responseData.message || '未知错误'}`);
-      }
-
-      return responseData.choices?.[0]?.message?.content || '';
     }
 
+    const requestBody = {
+      model: selectedProvider.model,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7,
+      max_tokens: 2000,
+    };
+
+    const response = await fetch(selectedProvider.baseUrl, {
+      method: 'POST',
+      headers: selectedProvider.headers,
+      body: JSON.stringify(requestBody),
+      signal: AbortSignal.timeout(60000),
+    });
+
+    const responseData = await response.json() as OpenAIStyleResponse;
+    if (!response.ok) {
+      const errorMessage = responseData.error?.message || responseData.message || '未知错误';
+      throw new Error(`${selectedProvider.name} API错误: ${errorMessage}`);
+    }
+
+    return responseData.choices?.[0]?.message?.content || '';
   } catch (error) {
     console.error(`AI调用失败 (${selectedProvider.name}):`, error);
-    
-    // 如果有其他提供商，尝试下一个
-    const remainingProviders = providers.filter(p => p.name !== selectedProvider.name);
+
     if (remainingProviders.length > 0) {
       console.log(`尝试使用备用提供商: ${remainingProviders[0].name}`);
-      // 创建新的frontendApiKeys，排除失败的提供商
-      const newFrontendApiKeys = frontendApiKeys ? { ...frontendApiKeys } : undefined;
-      if (newFrontendApiKeys && selectedProvider.name === 'doubao') {
-        delete newFrontendApiKeys.doubao;
-      } else if (newFrontendApiKeys) {
-        delete (newFrontendApiKeys as any)[selectedProvider.name];
-      }
-      return executeAICall(remainingProviders, prompt, newFrontendApiKeys);
+      const updatedKeys = omitFrontendApiKey(frontendApiKeys, selectedProvider.name);
+      return executeAICall(remainingProviders, prompt, updatedKeys);
     }
 
     throw error;
@@ -408,7 +448,7 @@ export const NUTRITION_PROMPT_TEMPLATE = `
 // 图片食材识别功能
 export async function recognizeIngredientsFromImage(
   imageDataUrl: string,
-  frontendApiKeys?: any
+  frontendApiKeys?: FrontendApiKeys
 ): Promise<IngredientRecognitionResult> {
   console.log('🔍 recognizeIngredientsFromImage 调用参数:', {
     hasImageData: !!imageDataUrl,
@@ -419,16 +459,16 @@ export async function recognizeIngredientsFromImage(
   });
 
   // 尝试使用前端API密钥
-  if (frontendApiKeys?.doubao?.key && frontendApiKeys?.doubao?.endpointId) {
+  if (frontendApiKeys?.doubao?.key && frontendApiKeys.doubao.endpointId) {
     try {
       console.log('🔑 使用前端提供的豆包API密钥');
       const { DoubaoVisionClient } = await import('./doubao-vision');
 
       // 创建一个临时的客户端实例，绕过构造函数的环境变量检查
       const client = Object.create(DoubaoVisionClient.prototype);
-      client.apiKey = frontendApiKeys.doubao.key;
-      client.endpointId = frontendApiKeys.doubao.endpointId;
-      client.baseUrl = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
+      Reflect.set(client, 'apiKey', frontendApiKeys.doubao.key);
+      Reflect.set(client, 'endpointId', frontendApiKeys.doubao.endpointId);
+      Reflect.set(client, 'baseUrl', 'https://ark.cn-beijing.volces.com/api/v3/chat/completions');
 
       console.log('✅ 前端豆包客户端创建成功，开始识别');
       return await client.recognizeIngredients(imageDataUrl);
@@ -452,7 +492,7 @@ export async function recognizeIngredientsFromImage(
 
 // 测试豆包视觉API连接
 export async function testDoubaoVisionConnection(
-  frontendApiKeys?: any
+  frontendApiKeys?: FrontendApiKeys
 ): Promise<{ success: boolean; message: string }> {
   try {
     console.log('🧪 测试豆包视觉API连接', {
@@ -462,15 +502,15 @@ export async function testDoubaoVisionConnection(
     });
 
     // 尝试使用前端API密钥
-    if (frontendApiKeys?.doubao?.key && frontendApiKeys?.doubao?.endpointId) {
+    if (frontendApiKeys?.doubao?.key && frontendApiKeys.doubao.endpointId) {
       console.log('🔑 使用前端提供的豆包API密钥进行测试');
       const { DoubaoVisionClient } = await import('./doubao-vision');
 
       // 创建一个临时的客户端实例，绕过构造函数的环境变量检查
       const client = Object.create(DoubaoVisionClient.prototype);
-      client.apiKey = frontendApiKeys.doubao.key;
-      client.endpointId = frontendApiKeys.doubao.endpointId;
-      client.baseUrl = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
+      Reflect.set(client, 'apiKey', frontendApiKeys.doubao.key);
+      Reflect.set(client, 'endpointId', frontendApiKeys.doubao.endpointId);
+      Reflect.set(client, 'baseUrl', 'https://ark.cn-beijing.volces.com/api/v3/chat/completions');
 
       const result = await client.testConnection();
       console.log('✅ 前端豆包API测试结果:', result);

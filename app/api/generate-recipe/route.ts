@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateRecipe, withRetry } from '@/lib/ai-service';
-import { UserPreferences, RecipeGenerationRequest, ApiResponse, Recipe } from '@/lib/types';
+import { UserPreferences, RecipeGenerationRequest, ApiResponse, Recipe, FrontendApiKeys } from '@/lib/types';
 import { cleanIngredients, formatErrorMessage } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   try {
     // 解析请求体
-    const body: RecipeGenerationRequest & { apiKeys?: any; preferredProvider?: string } = await request.json();
+    const body: RecipeGenerationRequest & { apiKeys?: FrontendApiKeys; preferredProvider?: string } = await request.json();
     const { ingredients, preferences, apiKeys, preferredProvider } = body;
 
     // 验证输入

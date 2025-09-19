@@ -12,6 +12,20 @@ export interface StoredAPIKeys {
   preferredRecipeProvider?: string;
 }
 
+const STORED_KEY_NAMES: Array<keyof StoredAPIKeys> = [
+  'deepseek',
+  'doubao',
+  'doubaoEndpointId',
+  'qwen',
+  'glm',
+  'gemini',
+  'preferredRecipeProvider',
+];
+
+function isStoredApiKey(key: string): key is keyof StoredAPIKeys {
+  return (STORED_KEY_NAMES as string[]).includes(key);
+}
+
 // 简单的加密/解密工具（基于Base64和简单混淆）
 const ENCRYPTION_KEY = 'recipe-genius-2025';
 
@@ -41,7 +55,7 @@ function simpleDecrypt(encrypted: string): string {
 
     const encoded = encrypted.slice(0, lastPipeIndex).split('').reverse().join('');
     return atob(encoded);
-  } catch (error) {
+  } catch {
     return '';
   }
 }
@@ -108,9 +122,9 @@ export function getStoredAPIKeys(): StoredAPIKeys {
     Object.entries(encrypted).forEach(([provider, encryptedKey]) => {
       if (typeof encryptedKey === 'string') {
         const decryptedKey = simpleDecrypt(encryptedKey);
-        if (decryptedKey) {
-          (decrypted as any)[provider] = decryptedKey;
-        } else {
+        if (decryptedKey && isStoredApiKey(provider)) {
+          decrypted[provider] = decryptedKey;
+        } else if (!decryptedKey) {
           hasDecryptionFailure = true;
         }
       }
@@ -144,7 +158,9 @@ export function clearStoredAPIKeys(): void {
 export function clearProviderAPIKey(provider: string): void {
   try {
     const current = getStoredAPIKeys();
-    delete (current as any)[provider];
+    if (isStoredApiKey(provider)) {
+      delete current[provider];
+    }
     storeAPIKeys(current);
   } catch (error) {
     console.error(`清除${provider}API密钥失败:`, error);
@@ -189,7 +205,7 @@ export function getConfiguredProviders(): string[] {
       }
       return key && typeof key === 'string' && key.trim().length > 0;
     })
-    .map(([provider, _]) => provider);
+    .map(([provider]) => provider);
 }
 
 // API提供商信息

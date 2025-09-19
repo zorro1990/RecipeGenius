@@ -5,8 +5,7 @@ import {
   RetryStrategy,
   classifyError,
   createErrorContext,
-  reportError,
-  generateFallbackIngredients
+  reportError
 } from './image-recognition-fallback';
 
 export interface DoubaoVisionRequest {
@@ -250,9 +249,9 @@ export class DoubaoVisionClient {
 
       // 清理和标准化食材名称
       const cleanedIngredients = parsed.ingredients
-        .filter((item: any) => typeof item === 'string' && item.trim().length > 0)
-        .map((item: string) => item.trim())
-        .filter((item: string, index: number, arr: string[]) => arr.indexOf(item) === index); // 去重
+        .filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+        .map(item => item.trim())
+        .filter((item, index, arr) => arr.indexOf(item) === index); // 去重
 
       return {
         ingredients: cleanedIngredients,
@@ -260,10 +259,12 @@ export class DoubaoVisionClient {
           Math.max(0, Math.min(1, parsed.confidence)) : 0.8,
         description: typeof parsed.description === 'string' ? 
           parsed.description.trim() : '已识别图片中的食材',
-        suggestions: Array.isArray(parsed.suggestions) ? 
-          parsed.suggestions.filter((item: any) => typeof item === 'string') : [],
-        categories: Array.isArray(parsed.categories) ? 
-          parsed.categories.filter((item: any) => typeof item === 'string') : []
+        suggestions: Array.isArray(parsed.suggestions)
+          ? parsed.suggestions.filter((item): item is string => typeof item === 'string')
+          : [],
+        categories: Array.isArray(parsed.categories)
+          ? parsed.categories.filter((item): item is string => typeof item === 'string')
+          : [],
       };
 
     } catch (error) {

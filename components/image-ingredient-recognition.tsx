@@ -32,6 +32,13 @@ interface RecognitionResult {
   processingTime?: number;
 }
 
+interface RecognizeApiResponse {
+  success: boolean;
+  data?: RecognitionResult;
+  error?: string;
+  message?: string;
+}
+
 interface ImageIngredientRecognitionProps {
   onIngredientsConfirmed: (ingredients: string[]) => void;
   className?: string;
@@ -49,7 +56,6 @@ export function ImageIngredientRecognition({
     dataUrl: string;
   } | null>(null);
   const [recognitionResult, setRecognitionResult] = useState<RecognitionResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [errorDetails, setErrorDetails] = useState<{
     title: string;
     message: string;
@@ -62,7 +68,6 @@ export function ImageIngredientRecognition({
   // 处理图片选择
   const handleImageSelect = useCallback(async (file: File, compressedDataUrl: string) => {
     setSelectedImage({ file, dataUrl: compressedDataUrl });
-    setError(null);
     setState('recognizing');
     setProgress(0);
 
@@ -105,18 +110,17 @@ export function ImageIngredientRecognition({
       clearInterval(progressInterval);
       setProgress(100);
 
+      const responseBody = await response.json() as RecognizeApiResponse;
+
       if (!response.ok) {
-        const errorData = await response.json() as any;
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+        throw new Error(responseBody.error || `HTTP ${response.status}: ${response.statusText}`);
       }
 
-      const data = await response.json() as any;
-
-      if (!data.success) {
-        throw new Error(data.error || '识别失败');
+      if (!responseBody.success || !responseBody.data) {
+        throw new Error(responseBody.error || '识别失败');
       }
 
-      setRecognitionResult(data.data);
+      setRecognitionResult(responseBody.data);
       setState('success');
 
       // 重置进度
@@ -129,7 +133,6 @@ export function ImageIngredientRecognition({
       const errorType = classifyError(error instanceof Error ? error : '识别失败');
       const errorInfo = getUserFriendlyErrorMessage(errorType);
 
-      setError(error instanceof Error ? error.message : '识别失败，请重试');
       setErrorDetails(errorInfo);
       setState('error');
       setProgress(0);
@@ -148,7 +151,6 @@ export function ImageIngredientRecognition({
   const handleImageRemove = useCallback(() => {
     setSelectedImage(null);
     setRecognitionResult(null);
-    setError(null);
     setErrorDetails(null);
     setState('idle');
     setProgress(0);
@@ -159,7 +161,6 @@ export function ImageIngredientRecognition({
   const handleRetry = useCallback(() => {
     if (selectedImage) {
       setRetryCount(prev => prev + 1);
-      setError(null);
       setErrorDetails(null);
       handleImageSelect(selectedImage.file, selectedImage.dataUrl);
     }
@@ -281,7 +282,6 @@ export function ImageIngredientRecognition({
                     // 重置到初始状态，允许重新识别
                     setSelectedImage(null);
                     setRecognitionResult(null);
-                    setError(null);
                     setState('idle');
                   }}
                   variant="outline"
@@ -369,7 +369,7 @@ export function ImageIngredientRecognition({
                       size="sm"
                       onClick={() => {
                         // 提供手动输入的回退方案
-                        const fallback = generateFallbackIngredients();
+                        generateFallbackIngredients();
                         onIngredientsConfirmed([]);
                       }}
                     >

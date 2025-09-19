@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Recipe } from '@/lib/types';
+import { ApiResponse, Recipe } from '@/lib/types';
 import { RecipeCard } from '@/components/recipe/recipe-card';
 import { RecipeSteps } from '@/components/recipe/recipe-steps';
 import { HealthInfoComponent } from '@/components/recipe/health-info';
@@ -69,10 +69,10 @@ export default function RecipePage() {
         throw new Error('重新生成菜谱失败');
       }
       
-      const data = await response.json() as any;
-      if (data.recipe) {
-        setRecipe(data.recipe);
-        localStorage.setItem('currentRecipe', JSON.stringify(data.recipe));
+      const data = await response.json() as ApiResponse<{ recipe: Recipe }>;
+      if (data.data?.recipe) {
+        setRecipe(data.data.recipe);
+        localStorage.setItem('currentRecipe', JSON.stringify(data.data.recipe));
       }
     } catch (error) {
       console.error('重新生成菜谱失败:', error);
@@ -106,7 +106,7 @@ export default function RecipePage() {
           text: `${recipe.description}\n\n制作时间：${recipe.cookingTime}分钟\n份数：${recipe.servings}人`,
           url: window.location.href,
         });
-      } catch (error) {
+      } catch {
         console.log('分享取消或失败');
       }
     } else {
@@ -294,7 +294,7 @@ ${recipe.tips ? `\n烹饪小贴士：\n${recipe.tips.map(tip => `• ${tip}`).jo
           </div>
           
           <p className="text-sm text-gray-500">
-            💡 不满意当前菜谱？点击"换个菜谱试试"获得新的创意
+            💡 不满意当前菜谱？点击&quot;换个菜谱试试&quot;获得新的创意
           </p>
         </div>
       </div>

@@ -1,7 +1,7 @@
 // Cloudflare Workers API路由包装器
 
 import { NextRequest, NextResponse } from 'next/server';
-import type { CloudflareContext, RequestContext } from '@/types/cloudflare';
+import type { CloudflareContext } from '@/types/cloudflare';
 import { 
   isCloudflareWorkers, 
   createRequestContext, 
@@ -66,7 +66,7 @@ export function withAPIWrapper(
 
   return async function wrappedHandler(
     request: NextRequest,
-    context?: any
+    context?: CloudflareContext
   ): Promise<NextResponse | Response> {
     const requestContext = createRequestContext(request);
     const startTime = Date.now();

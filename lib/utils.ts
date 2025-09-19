@@ -58,7 +58,7 @@ export function delay(ms: number): Promise<void> {
 }
 
 // 防抖函数
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => void>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -97,7 +97,7 @@ export function extractJSON(text: string): string | null {
 }
 
 // 安全的JSON解析
-export function safeJSONParse<T = any>(str: string, fallback: T | null = null): T | null {
+export function safeJSONParse<T = unknown>(str: string, fallback: T | null = null): T | null {
   try {
     return JSON.parse(str) as T
   } catch {

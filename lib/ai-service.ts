@@ -1,4 +1,4 @@
-import { Recipe, RecipeStep, StepSkillLevel, UserPreferences, NutritionInfo, COMMON_HEALTH_CONDITIONS } from './types';
+import { Recipe, RecipeStep, StepSkillLevel, UserPreferences, NutritionInfo, FrontendApiKeys, COMMON_HEALTH_CONDITIONS } from './types';
 import { extractJSON, safeJSONParse, generateId } from './utils';
 import {
   callRecipeAI,
@@ -24,6 +24,40 @@ const DIFFICULTY_SKILL_LEVEL: Record<'easy' | 'medium' | 'hard', StepSkillLevel>
 };
 
 const STEP_SKILL_LEVEL_VALUES: StepSkillLevel[] = ['basic', 'intermediate', 'advanced'];
+
+interface RawIngredient {
+  name?: string;
+  quantity?: string;
+  unit?: string;
+}
+
+interface RawHealthInfo {
+  filteredIngredients?: string[];
+  filterReasons?: string[];
+  healthBenefits?: string[];
+  nutritionHighlights?: string[];
+  healthTips?: string[];
+}
+
+interface RawRecipeData {
+  title?: string;
+  description?: string;
+  ingredients?: RawIngredient[];
+  steps?: unknown;
+  cookingTime?: number;
+  servings?: number;
+  difficulty?: string;
+  nutrition?: Partial<NutritionInfo>;
+  tags?: string[];
+  tips?: string[];
+  healthInfo?: RawHealthInfo;
+}
+
+type RawNutritionData = Partial<NutritionInfo>;
+
+interface AlternativeResponse {
+  alternatives?: string[];
+}
 
 function buildDifficultyGuidance(difficulty: 'easy' | 'medium' | 'hard'): string {
   switch (difficulty) {
@@ -190,7 +224,7 @@ function buildPreferencesText(preferences: UserPreferences): string {
 export async function generateRecipe(
   ingredients: string[],
   preferences: UserPreferences,
-  frontendApiKeys?: any,
+  frontendApiKeys?: FrontendApiKeys,
   preferredProvider?: string
 ): Promise<Recipe> {
   try {
@@ -218,7 +252,7 @@ export async function generateRecipe(
     }
 
     // 解析JSON
-    const recipeData = safeJSONParse(jsonText, null) as any;
+    const recipeData = safeJSONParse(jsonText, null) as RawRecipeData | null;
     if (!recipeData) {
       throw new Error('无法解析菜谱JSON数据');
     }
@@ -238,11 +272,11 @@ export async function generateRecipe(
       id: generateId(),
       title: recipeData.title,
       description: recipeData.description || '',
-      ingredients: Array.isArray(recipeData.ingredients) 
-        ? recipeData.ingredients.map((ing: any) => ({
-            name: ing.name || '',
-            quantity: ing.quantity || '',
-            unit: ing.unit || ''
+      ingredients: Array.isArray(recipeData.ingredients)
+        ? recipeData.ingredients.map((ing) => ({
+            name: ing?.name ?? '',
+            quantity: ing?.quantity ?? '',
+            unit: ing?.unit ?? '',
           }))
         : [],
       steps: normalizedSteps,
@@ -252,35 +286,39 @@ export async function generateRecipe(
       servings: typeof recipeData.servings === 'number' 
         ? recipeData.servings 
         : preferences.servings,
-      difficulty: ['easy', 'medium', 'hard'].includes(recipeData.difficulty) 
-        ? recipeData.difficulty 
+      difficulty: recipeData.difficulty && ['easy', 'medium', 'hard'].includes(recipeData.difficulty as string)
+        ? recipeData.difficulty as Recipe['difficulty']
         : preferences.difficulty,
       nutrition: recipeData.nutrition ? {
-        calories: recipeData.nutrition.calories || 0,
-        protein: recipeData.nutrition.protein || 0,
-        carbs: recipeData.nutrition.carbs || 0,
-        fat: recipeData.nutrition.fat || 0,
-        fiber: recipeData.nutrition.fiber || 0
+        calories: recipeData.nutrition.calories ?? 0,
+        protein: recipeData.nutrition.protein ?? 0,
+        carbs: recipeData.nutrition.carbs ?? 0,
+        fat: recipeData.nutrition.fat ?? 0,
+        fiber: recipeData.nutrition.fiber ?? 0,
       } : {
         calories: 0,
         protein: 0,
         carbs: 0,
         fat: 0,
-        fiber: 0
+        fiber: 0,
       },
-      tags: Array.isArray(recipeData.tags) ? recipeData.tags : [],
-      tips: Array.isArray(recipeData.tips) ? recipeData.tips : [],
+      tags: Array.isArray(recipeData.tags)
+        ? recipeData.tags.filter((tag): tag is string => typeof tag === 'string')
+        : [],
+      tips: Array.isArray(recipeData.tips)
+        ? recipeData.tips.filter((tip): tip is string => typeof tip === 'string')
+        : [],
       healthInfo: recipeData.healthInfo ? {
         filteredIngredients: Array.isArray(recipeData.healthInfo.filteredIngredients)
-          ? recipeData.healthInfo.filteredIngredients : [],
+          ? recipeData.healthInfo.filteredIngredients.filter((item): item is string => typeof item === 'string') : [],
         filterReasons: Array.isArray(recipeData.healthInfo.filterReasons)
-          ? recipeData.healthInfo.filterReasons : [],
+          ? recipeData.healthInfo.filterReasons.filter((item): item is string => typeof item === 'string') : [],
         healthBenefits: Array.isArray(recipeData.healthInfo.healthBenefits)
-          ? recipeData.healthInfo.healthBenefits : [],
+          ? recipeData.healthInfo.healthBenefits.filter((item): item is string => typeof item === 'string') : [],
         nutritionHighlights: Array.isArray(recipeData.healthInfo.nutritionHighlights)
-          ? recipeData.healthInfo.nutritionHighlights : [],
+          ? recipeData.healthInfo.nutritionHighlights.filter((item): item is string => typeof item === 'string') : [],
         healthTips: Array.isArray(recipeData.healthInfo.healthTips)
-          ? recipeData.healthInfo.healthTips : []
+          ? recipeData.healthInfo.healthTips.filter((item): item is string => typeof item === 'string') : [],
       } : undefined,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -322,18 +360,18 @@ export async function analyzeNutrition(recipe: Recipe): Promise<NutritionInfo> {
     }
 
     // 解析JSON
-    const nutritionData = safeJSONParse(jsonText, null) as any;
+    const nutritionData = safeJSONParse(jsonText, null) as RawNutritionData | null;
     if (!nutritionData) {
       throw new Error('无法解析营养信息JSON数据');
     }
 
     // 构建营养信息对象
     const nutrition: NutritionInfo = {
-      calories: nutritionData.calories || 0,
-      protein: nutritionData.protein || 0,
-      carbs: nutritionData.carbs || 0,
-      fat: nutritionData.fat || 0,
-      fiber: nutritionData.fiber || 0
+      calories: nutritionData.calories ?? 0,
+      protein: nutritionData.protein ?? 0,
+      carbs: nutritionData.carbs ?? 0,
+      fat: nutritionData.fat ?? 0,
+      fiber: nutritionData.fiber ?? 0,
     };
 
     console.log('营养分析完成');
@@ -377,7 +415,7 @@ export async function suggestAlternatives(ingredient: string): Promise<string[]>
     }
 
     // 解析JSON
-    const alternativeData = safeJSONParse(jsonText, null) as any;
+    const alternativeData = safeJSONParse(jsonText, null) as AlternativeResponse | null;
     if (!alternativeData || !alternativeData.alternatives) {
       throw new Error('无法解析替代建议JSON数据');
     }
@@ -436,7 +474,7 @@ export async function testAIConnection(): Promise<{
     }
 
     const testPrompt = '请回复"连接成功"';
-    const response = await callAI(testPrompt);
+    await callAI(testPrompt);
     
     return {
       success: true,

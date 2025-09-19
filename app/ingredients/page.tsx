@@ -10,10 +10,10 @@ import { PreferenceForm } from '@/components/forms/preference-form';
 import { APISettingsModal } from '@/components/api-settings-modal';
 import { APIStatusIndicator } from '@/components/api-status-indicator';
 import { ImageIngredientRecognition } from '@/components/image-ingredient-recognition';
-import { UserPreferences } from '@/lib/types';
+import { ApiResponse, Recipe, UserPreferences } from '@/lib/types';
 import { hasAnyAPIKey, getStoredAPIKeys, getPreferredRecipeProvider } from '@/lib/api-key-storage';
 import { filterIngredientsByPreferences, generateFilterExplanation } from '@/lib/ingredient-filter';
-import { Loader2, ChefHat, ArrowLeft, Sparkles, Settings, AlertTriangle, Camera } from 'lucide-react';
+import { Loader2, ChefHat, ArrowLeft, Sparkles, Settings, Camera } from 'lucide-react';
 import Link from 'next/link';
 
 export default function IngredientsPage() {
@@ -168,26 +168,25 @@ export default function IngredientsPage() {
       }
 
       console.log('📡 收到响应:', response.status, response.statusText);
-      
+      const responseBody = await response.json() as ApiResponse<{ recipe: Recipe }>;
+
       if (!response.ok) {
-        const errorData = await response.json() as any;
-        throw new Error(errorData.error || '生成菜谱失败');
+        throw new Error(responseBody.error || '生成菜谱失败');
       }
 
-      const data = await response.json() as any;
-      console.log('API返回数据:', data); // 添加调试日志
+      console.log('API返回数据:', responseBody); // 添加调试日志
 
-      if (data.success && data.data && data.data.recipe) {
+      if (responseBody.success && responseBody.data && responseBody.data.recipe) {
         // 存储到localStorage
-        localStorage.setItem('currentRecipe', JSON.stringify(data.data.recipe));
+        localStorage.setItem('currentRecipe', JSON.stringify(responseBody.data.recipe));
         localStorage.setItem('recipeIngredients', JSON.stringify(ingredients));
         localStorage.setItem('recipePreferences', JSON.stringify(preferences));
 
         // 跳转到菜谱展示页面
         router.push('/recipe');
       } else {
-        console.error('数据结构错误:', data);
-        throw new Error(data.error || '未收到有效的菜谱数据');
+        console.error('数据结构错误:', responseBody);
+        throw new Error(responseBody.error || '未收到有效的菜谱数据');
       }
     } catch (error) {
       console.error('生成菜谱失败:', error);

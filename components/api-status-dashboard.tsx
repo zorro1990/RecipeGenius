@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,18 +15,53 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { getStoredAPIKeys, API_PROVIDERS } from '@/lib/api-key-storage';
+import { ApiResponse } from '@/lib/types';
 
 interface APIStatusDashboardProps {
   onOpenSettings?: () => void;
 }
 
 export function APIStatusDashboard({ onOpenSettings }: APIStatusDashboardProps) {
-  const [status, setStatus] = useState<any>(null);
+  interface EnvironmentApiData {
+    environment?: Record<string, boolean>;
+  }
+
+  interface FrontendProviderStatus {
+    configured?: boolean;
+  }
+
+  interface FrontendApiData {
+    frontend?: {
+      summary?: {
+        configured: number;
+        total?: number;
+      };
+      providers?: Record<string, FrontendProviderStatus>;
+    };
+    report?: {
+      recommendations?: string[];
+    };
+  }
+
+  interface CombinedStatus {
+    totalProviders: number;
+    frontendConfigured: number;
+    envConfigured: number;
+    recommendations: string[];
+  }
+
+  interface StatusState {
+    environment?: EnvironmentApiData;
+    frontend?: FrontendApiData;
+    combined: CombinedStatus;
+  }
+
+  const [status, setStatus] = useState<StatusState | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDetails, setShowDetails] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const fetchStatus = async () => {
+  const fetchStatus = useCallback(async () => {
     setLoading(true);
     try {
       // 获取前端API密钥
@@ -34,7 +69,7 @@ export function APIStatusDashboard({ onOpenSettings }: APIStatusDashboardProps) 
       
       // 获取环境变量状态
       const envResponse = await fetch('/api/test-ai');
-      const envData = await envResponse.json() as any;
+      const envData = await envResponse.json() as ApiResponse<EnvironmentApiData>;
 
       // 获取前端状态分析
       const frontendResponse = await fetch('/api/frontend-api-status', {
@@ -42,16 +77,22 @@ export function APIStatusDashboard({ onOpenSettings }: APIStatusDashboardProps) 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ apiKeys: frontendKeys })
       });
-      const frontendData = await frontendResponse.json() as any;
+      const frontendData = await frontendResponse.json() as ApiResponse<FrontendApiData>;
+
+      const envConfiguredCount = envData.data?.environment
+        ? Object.values(envData.data.environment).filter(Boolean).length
+        : 0;
+      const frontendConfiguredCount = frontendData.data?.frontend?.summary?.configured ?? 0;
+      const recommendations = frontendData.data?.report?.recommendations ?? [];
 
       setStatus({
         environment: envData.data,
         frontend: frontendData.data,
         combined: {
           totalProviders: 5,
-          frontendConfigured: frontendData.data?.frontend?.summary?.configured || 0,
-          envConfigured: Object.values(envData.data?.environment || {}).filter(Boolean).length,
-          recommendations: frontendData.data?.report?.recommendations || []
+          frontendConfigured: frontendConfiguredCount,
+          envConfigured: envConfiguredCount,
+          recommendations,
         }
       });
       setLastUpdated(new Date());
@@ -60,22 +101,28 @@ export function APIStatusDashboard({ onOpenSettings }: APIStatusDashboardProps) 
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchStatus();
-  }, []);
+  }, [fetchStatus]);
 
   const getOverallStatus = () => {
-    if (!status) return { color: 'gray', text: '检查中...', icon: RefreshCw };
+    type StatusInfo = {
+      color: 'gray' | 'red' | 'green' | 'amber';
+      text: string;
+      icon: typeof RefreshCw;
+    };
+
+    if (!status) return { color: 'gray', text: '检查中...', icon: RefreshCw } satisfies StatusInfo;
     
     const total = status.combined.frontendConfigured + status.combined.envConfigured;
     if (total === 0) {
-      return { color: 'red', text: '未配置', icon: XCircle };
+      return { color: 'red', text: '未配置', icon: XCircle } satisfies StatusInfo;
     } else if (status.combined.frontendConfigured > 0) {
-      return { color: 'green', text: '前端配置', icon: CheckCircle };
+      return { color: 'green', text: '前端配置', icon: CheckCircle } satisfies StatusInfo;
     } else {
-      return { color: 'amber', text: '环境变量', icon: AlertTriangle };
+      return { color: 'amber', text: '环境变量', icon: AlertTriangle } satisfies StatusInfo;
     }
   };
 

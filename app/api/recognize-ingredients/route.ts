@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { recognizeIngredientsFromImage } from '@/lib/ai-providers';
-import { validateImageFile, compressImage } from '@/lib/image-utils';
 import { log } from '@/lib/cloudflare-utils';
 
 // export const runtime = 'edge'; // 暂时禁用edge runtime以兼容OpenNext

@@ -1,15 +1,15 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Upload, 
-  X, 
-  Image as ImageIcon, 
-  Loader2, 
+import {
+  Upload,
+  X,
+  Loader2,
   AlertCircle,
   Camera,
   FileImage
@@ -277,9 +277,11 @@ export function ImageUpload({
           <CardContent className="p-4">
             <div className="flex items-start gap-4">
               <div className="relative">
-                <img
+                <Image
                   src={preview.dataUrl}
                   alt="预览"
+                  width={96}
+                  height={96}
                   className="w-24 h-24 object-cover rounded-lg border"
                 />
                 <Button

@@ -1,9 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+interface FrontendAPIKeys extends Record<string, string | undefined> {
+  doubaoEndpointId?: string;
+}
+
+interface ProviderStatus {
+  configured: boolean;
+  hasKey: boolean;
+  hasEndpoint: boolean | null;
+  keyLength: number;
+  keyPrefix: string | null;
+}
+
+interface FrontendStatusSummary {
+  configured: number;
+  total: number;
+  percentage: number;
+  hasAny: boolean;
+}
+
+interface FrontendStatus {
+  providers: Record<string, ProviderStatus>;
+  summary: FrontendStatusSummary;
+}
+
+interface StatusReport {
+  overall: 'unknown' | 'no-config' | 'frontend-only' | 'env-only' | 'hybrid';
+  recommendations: string[];
+  warnings: string[];
+  info: string[];
+}
+
 // 获取前端API密钥状态的端点
 export async function POST(request: NextRequest) {
   try {
-    const { apiKeys } = await request.json() as { apiKeys: Record<string, string> };
+    const { apiKeys } = await request.json() as { apiKeys: FrontendAPIKeys };
     
     if (!apiKeys || typeof apiKeys !== 'object') {
       return NextResponse.json({
@@ -49,27 +80,30 @@ export async function POST(request: NextRequest) {
 }
 
 // 分析前端API密钥状态
-function analyzeFrontendAPIKeys(apiKeys: Record<string, string>) {
+function analyzeFrontendAPIKeys(apiKeys: FrontendAPIKeys): FrontendStatus {
   const providers = ['deepseek', 'doubao', 'qwen', 'glm', 'gemini'];
-  const status: Record<string, any> = {};
-  
-  let configuredCount = 0;
-  let totalProviders = providers.length;
+  const status: Record<string, ProviderStatus> = {};
 
-  providers.forEach(provider => {
-    const hasKey = apiKeys[provider] && apiKeys[provider].trim().length > 0;
-    const hasEndpoint = provider === 'doubao' ? 
-      (apiKeys.doubaoEndpointId && apiKeys.doubaoEndpointId.trim().length > 0) : true;
-    
+  let configuredCount = 0;
+  const totalProviders = providers.length;
+
+  providers.forEach((provider) => {
+    const key = apiKeys[provider];
+    const hasKey = typeof key === 'string' && key.trim().length > 0;
+    const requiresEndpoint = provider === 'doubao';
+    const endpointValue = apiKeys.doubaoEndpointId;
+    const hasEndpoint = requiresEndpoint ? typeof endpointValue === 'string' && endpointValue.trim().length > 0 : true;
+    const configured = hasKey && hasEndpoint;
+
     status[provider] = {
-      configured: hasKey && hasEndpoint,
+      configured,
       hasKey,
-      hasEndpoint: provider === 'doubao' ? hasEndpoint : null,
-      keyLength: hasKey ? apiKeys[provider].length : 0,
-      keyPrefix: hasKey ? maskAPIKey(apiKeys[provider]) : null
+      hasEndpoint: requiresEndpoint ? hasEndpoint : null,
+      keyLength: hasKey ? key!.length : 0,
+      keyPrefix: hasKey ? maskAPIKey(key!) : null,
     };
 
-    if (hasKey && hasEndpoint) {
+    if (configured) {
       configuredCount++;
     }
   });
@@ -79,19 +113,19 @@ function analyzeFrontendAPIKeys(apiKeys: Record<string, string>) {
     summary: {
       configured: configuredCount,
       total: totalProviders,
-      percentage: Math.round((configuredCount / totalProviders) * 100),
-      hasAny: configuredCount > 0
-    }
+      percentage: totalProviders === 0 ? 0 : Math.round((configuredCount / totalProviders) * 100),
+      hasAny: configuredCount > 0,
+    },
   };
 }
 
 // 生成状态报告
-function generateStatusReport(frontendStatus: any, envStatus: any) {
-  const report = {
+function generateStatusReport(frontendStatus: FrontendStatus, envStatus: Record<string, boolean>): StatusReport {
+  const report: StatusReport = {
     overall: 'unknown',
-    recommendations: [] as string[],
-    warnings: [] as string[],
-    info: [] as string[]
+    recommendations: [],
+    warnings: [],
+    info: [],
   };
 
   const frontendConfigured = frontendStatus.summary.configured;
@@ -125,8 +159,8 @@ function generateStatusReport(frontendStatus: any, envStatus: any) {
   // 具体提供商建议
   if (frontendConfigured > 0) {
     const configuredProviders = Object.entries(frontendStatus.providers)
-      .filter(([_, status]: [string, any]) => status.configured)
-      .map(([provider, _]) => provider);
+      .filter(([, providerStatus]) => providerStatus.configured)
+      .map(([provider]) => provider);
     
     report.info.push(`🎯 已配置的前端提供商: ${configuredProviders.join(', ')}`);
     

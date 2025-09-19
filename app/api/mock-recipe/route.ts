@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Recipe, RecipeStep, StepSkillLevel } from '@/lib/types';
+import { Recipe, RecipeStep, StepSkillLevel, UserPreferences } from '@/lib/types';
 import { generateId } from '@/lib/utils';
 
 function buildMockSteps(ingredients: string[], difficulty: Recipe['difficulty']): RecipeStep[] {
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
   try {
     const { ingredients, preferences } = await request.json() as {
       ingredients: string[];
-      preferences: any;
+      preferences: Partial<UserPreferences>;
     };
 
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -90,6 +90,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
+    console.error('模拟菜谱生成失败:', error);
     return NextResponse.json({
       success: false,
       error: '模拟菜谱生成失败'

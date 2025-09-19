@@ -200,7 +200,7 @@ export function getUserFriendlyErrorMessage(errorType: RecognitionErrorType): {
 }
 
 // 基于图片内容的简单食材推测（回退方案）
-export function generateFallbackIngredients(imageDataUrl?: string): FallbackResult {
+export function generateFallbackIngredients(): FallbackResult {
   // 常见食材列表，按类别分组
   const commonIngredients = {
     vegetables: ['土豆', '番茄', '洋葱', '胡萝卜', '白菜', '菠菜', '韭菜', '芹菜', '青椒', '茄子'],

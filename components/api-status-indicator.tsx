@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Settings, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
+import { Settings, CheckCircle, AlertCircle } from 'lucide-react';
 import { 
   hasAnyAPIKey, 
   getConfiguredProviders, 

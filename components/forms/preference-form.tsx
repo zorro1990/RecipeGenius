@@ -123,7 +123,7 @@ export function PreferenceForm({
               <Button
                 key={difficulty.value}
                 variant={preferences.difficulty === difficulty.value ? 'default' : 'outline'}
-                onClick={() => updatePreferences({ difficulty: difficulty.value as any })}
+                onClick={() => updatePreferences({ difficulty: difficulty.value as UserPreferences['difficulty'] })}
                 className="h-auto p-4 flex flex-col items-center gap-2"
               >
                 <span className="font-medium">{difficulty.label}</span>

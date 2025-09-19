@@ -1,5 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+interface DoubaoChoice {
+  message?: {
+    content?: string;
+  };
+}
+
+interface DoubaoResponse {
+  choices?: DoubaoChoice[];
+  usage?: unknown;
+  error?: {
+    message?: string;
+  };
+  message?: string;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json() as { apiKey: string; endpointId: string };
@@ -46,7 +61,7 @@ export async function POST(request: NextRequest) {
 
     console.log('📥 豆包API响应状态:', response.status, response.statusText);
 
-    const responseData = await response.json() as any;
+    const responseData = await response.json() as DoubaoResponse;
     console.log('📋 豆包API响应数据:', responseData);
 
     if (!response.ok) {

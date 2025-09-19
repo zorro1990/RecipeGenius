@@ -23,10 +23,8 @@ import {
   getStoredAPIKeys,
   clearStoredAPIKeys,
   clearProviderAPIKey,
-  maskAPIKey,
   validateAPIKeyFormat,
   API_PROVIDERS,
-  setPreferredRecipeProvider,
   getPreferredRecipeProvider
 } from '@/lib/api-key-storage';
 
@@ -34,6 +32,49 @@ interface APISettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onKeysUpdated?: () => void;
+}
+
+type ProviderKey = keyof typeof API_PROVIDERS;
+type ProviderInfo = (typeof API_PROVIDERS)[ProviderKey];
+type ProvidersState = Partial<Record<ProviderKey, ProviderState>>;
+
+const PROVIDER_KEYS = Object.keys(API_PROVIDERS) as ProviderKey[];
+
+function getStoredProviderKey(keys: StoredAPIKeys, provider: ProviderKey): string {
+  switch (provider) {
+    case 'deepseek':
+      return keys.deepseek ?? '';
+    case 'doubao':
+      return keys.doubao ?? '';
+    case 'qwen':
+      return keys.qwen ?? '';
+    case 'glm':
+      return keys.glm ?? '';
+    case 'gemini':
+      return keys.gemini ?? '';
+    default:
+      return '';
+  }
+}
+
+function setStoredProviderKey(target: StoredAPIKeys, provider: ProviderKey, value: string): void {
+  switch (provider) {
+    case 'deepseek':
+      target.deepseek = value;
+      break;
+    case 'doubao':
+      target.doubao = value;
+      break;
+    case 'qwen':
+      target.qwen = value;
+      break;
+    case 'glm':
+      target.glm = value;
+      break;
+    case 'gemini':
+      target.gemini = value;
+      break;
+  }
 }
 
 interface ProviderState {
@@ -46,8 +87,7 @@ interface ProviderState {
 }
 
 export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettingsModalProps) {
-  const [providers, setProviders] = useState<Record<string, ProviderState>>({});
-  const [isSaving, setIsSaving] = useState(false);
+  const [providers, setProviders] = useState<ProvidersState>({});
   const [showWarning, setShowWarning] = useState(true);
   const [preferredRecipeProvider, setPreferredRecipeProviderState] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'image' | 'recipe'>('image');
@@ -56,16 +96,16 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
   useEffect(() => {
     if (isOpen) {
       const stored = getStoredAPIKeys();
-      const initialState: Record<string, ProviderState> = {};
+      const initialState: ProvidersState = {};
 
-      Object.keys(API_PROVIDERS).forEach(provider => {
+      PROVIDER_KEYS.forEach((provider) => {
         initialState[provider] = {
-          apiKey: (stored as any)[provider] || '',
+          apiKey: getStoredProviderKey(stored, provider),
           endpointId: provider === 'doubao' ? stored.doubaoEndpointId || '' : undefined,
           isVisible: false,
           isValidating: false,
           isValid: null,
-          error: null
+          error: null,
         };
       });
 
@@ -78,7 +118,7 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
   }, [isOpen]);
 
   // 更新提供商状态
-  const updateProvider = (provider: string, updates: Partial<ProviderState>) => {
+  const updateProvider = (provider: ProviderKey, updates: Partial<ProviderState>) => {
     setProviders(prev => ({
       ...prev,
       [provider]: { ...prev[provider], ...updates }
@@ -90,9 +130,14 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
     try {
       const keysToStore: StoredAPIKeys = {};
 
-      Object.entries(providers).forEach(([provider, state]) => {
+      PROVIDER_KEYS.forEach((provider) => {
+        const state = providers[provider];
+        if (!state) {
+          return;
+        }
+
         if (state.apiKey.trim()) {
-          (keysToStore as any)[provider] = state.apiKey.trim();
+          setStoredProviderKey(keysToStore, provider, state.apiKey.trim());
           if (provider === 'doubao' && state.endpointId?.trim()) {
             keysToStore.doubaoEndpointId = state.endpointId.trim();
           }
@@ -118,7 +163,7 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
         body: JSON.stringify({ apiKey, endpointId })
       });
 
-      const result = await response.json() as any;
+      const result = await response.json() as { success: boolean; error?: string; response?: unknown };
 
       if (result.success) {
         updateProvider('doubao', {
@@ -178,7 +223,7 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
         body: JSON.stringify(testData)
       });
 
-      const result = await response.json() as any;
+      const result = await response.json() as { success: boolean; error?: string };
 
       if (result.success) {
         updateProvider(provider, {
@@ -196,54 +241,12 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
         });
       }
     } catch (error) {
+      console.error('API密钥验证失败:', error);
       updateProvider(provider, {
         isValid: false,
         isValidating: false,
         error: '网络错误，请检查连接'
       });
-    }
-  };
-
-  // 保存API密钥
-  const handleSave = async () => {
-    console.log('🎯 handleSave被调用');
-    setIsSaving(true);
-
-    try {
-      const keysToStore: StoredAPIKeys = {};
-
-      console.log('📋 当前providers状态:', providers);
-
-      Object.entries(providers).forEach(([provider, state]) => {
-        console.log(`🔍 检查${provider}:`, {
-          hasApiKey: !!state.apiKey,
-          apiKeyLength: state.apiKey?.length || 0,
-          trimmedLength: state.apiKey?.trim().length || 0,
-          endpointId: state.endpointId
-        });
-
-        if (state.apiKey.trim()) {
-          (keysToStore as any)[provider] = state.apiKey.trim();
-          if (provider === 'doubao' && state.endpointId?.trim()) {
-            keysToStore.doubaoEndpointId = state.endpointId.trim();
-          }
-        }
-      });
-
-      console.log('💾 准备保存的密钥:', Object.keys(keysToStore));
-      storeAPIKeys(keysToStore);
-
-      // 保存首选菜谱生成模型
-      if (preferredRecipeProvider) {
-        setPreferredRecipeProvider(preferredRecipeProvider);
-      }
-
-      onKeysUpdated?.();
-      onClose();
-    } catch (error) {
-      console.error('保存API密钥失败:', error);
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -358,14 +361,15 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
 
               {/* 豆包配置 */}
               {(() => {
-                const provider = 'doubao';
+                const provider: ProviderKey = 'doubao';
                 const info = API_PROVIDERS[provider];
-                const state = providers[provider] || {
+                const state: ProviderState = providers[provider] ?? {
                   apiKey: '',
+                  endpointId: '',
                   isVisible: false,
                   isValidating: false,
                   isValid: null,
-                  error: null
+                  error: null,
                 };
 
                 return (
@@ -586,15 +590,16 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
 
               {/* 其他模型配置 */}
               <div className="space-y-4">
-                {Object.entries(API_PROVIDERS)
-                  .filter(([provider]) => provider !== 'doubao') // 排除豆包
+                {(Object.entries(API_PROVIDERS) as Array<[ProviderKey, ProviderInfo]>)
+                  .filter(([provider]) => provider !== 'doubao')
                   .map(([provider, info]) => {
-              const state = providers[provider] || {
+              const state: ProviderState = providers[provider] ?? {
                 apiKey: '',
                 isVisible: false,
                 isValidating: false,
                 isValid: null,
-                error: null
+                error: null,
+                endpointId: provider === 'doubao' ? providers[provider]?.endpointId : undefined,
               };
 
               return (
@@ -606,24 +611,24 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <CardTitle className="text-lg">{info.name}</CardTitle>
-                            {(info as any).priority && (
+                            {info.priority && (
                               <Badge
-                                variant={(info as any).priority === '推荐' ? 'default' :
-                                        (info as any).priority === '必需' ? 'secondary' : 'outline'}
+                                variant={info.priority === '推荐' ? 'default' :
+                                        info.priority === '必需' ? 'secondary' : 'outline'}
                                 className={
-                                  (info as any).priority === '推荐' ? 'bg-green-100 text-green-700' :
-                                  (info as any).priority === '必需' ? 'bg-blue-100 text-blue-700' : ''
+                                  info.priority === '推荐' ? 'bg-green-100 text-green-700' :
+                                  info.priority === '必需' ? 'bg-blue-100 text-blue-700' : ''
                                 }
                               >
-                                {(info as any).priority}
+                                {info.priority}
                               </Badge>
                             )}
                           </div>
                           <p className="text-sm text-gray-600 mb-2">{info.description}</p>
-                          {(info as any).features && (
+                          {info.features && (
                             <div className="flex items-center gap-1 text-xs">
                               <span className="text-gray-500">功能：</span>
-                              {(info as any).features.map((feature: string, idx: number) => (
+                              {info.features.map((feature, idx) => (
                                 <span key={idx} className="bg-gray-100 px-2 py-0.5 rounded text-gray-700">
                                   {feature}
                                 </span>

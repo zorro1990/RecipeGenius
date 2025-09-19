@@ -1,15 +1,22 @@
 // Cloudflare Workers工具函数
 
-import type { 
-  CloudflareEnv, 
-  CloudflareContext, 
-  CacheOperations, 
+import type {
+  CacheOperations,
   APICacheConfig,
   RequestContext,
   ResponseHeaders,
   LogLevel,
   LogEntry
 } from '@/types/cloudflare';
+
+type GlobalWithEnv = typeof globalThis & Record<string, unknown> & { CACHE?: KVNamespace };
+type RequestWithCF = Request & { cf?: Record<string, unknown> };
+
+interface CachedApiEntry<T> {
+  data: T;
+  timestamp: number;
+  ttl: number;
+}
 
 // 环境检测
 export function isCloudflareWorkers(): boolean {
@@ -31,7 +38,9 @@ export function getEnvVar(key: string, defaultValue?: string): string | undefine
   // Cloudflare Workers环境
   if (isCloudflareWorkers() && typeof globalThis !== 'undefined') {
     // 在Workers中，环境变量通过context传递
-    return (globalThis as any)[key] || defaultValue;
+    const globalEnv = globalThis as GlobalWithEnv;
+    const value = globalEnv[key];
+    return typeof value === 'string' ? value : defaultValue;
   }
   
   // Node.js环境
@@ -56,7 +65,8 @@ export class CloudflareCache implements CacheOperations {
   private kv: KVNamespace | undefined;
 
   constructor(kv?: KVNamespace) {
-    this.kv = kv || (globalThis as any).CACHE;
+    const globalEnv = globalThis as GlobalWithEnv;
+    this.kv = kv || globalEnv.CACHE;
   }
 
   async get(key: string): Promise<string | null> {
@@ -115,9 +125,9 @@ export class CloudflareCache implements CacheOperations {
 }
 
 // API响应缓存
-export async function cacheAPIResponse(
+export async function cacheAPIResponse<T>(
   config: APICacheConfig,
-  response: any,
+  response: T,
   cache?: CloudflareCache
 ): Promise<void> {
   if (!cache) {
@@ -125,21 +135,21 @@ export async function cacheAPIResponse(
   }
   
   const cacheKey = `api:${config.key}`;
-  const cacheValue = JSON.stringify({
+  const cacheValue: CachedApiEntry<T> = {
     data: response,
     timestamp: Date.now(),
-    ttl: config.ttl
-  });
+    ttl: config.ttl,
+  };
   
-  await cache.put(cacheKey, cacheValue, {
+  await cache.put(cacheKey, JSON.stringify(cacheValue), {
     expirationTtl: config.ttl
   });
 }
 
-export async function getCachedAPIResponse(
+export async function getCachedAPIResponse<T>(
   key: string,
   cache?: CloudflareCache
-): Promise<any | null> {
+): Promise<T | null> {
   if (!cache) {
     cache = new CloudflareCache();
   }
@@ -152,7 +162,7 @@ export async function getCachedAPIResponse(
   }
   
   try {
-    const parsed = JSON.parse(cached);
+    const parsed = JSON.parse(cached) as CachedApiEntry<T>;
     const now = Date.now();
     
     // 检查是否过期
@@ -172,7 +182,7 @@ export async function getCachedAPIResponse(
 // 请求上下文生成
 export function createRequestContext(request: Request): RequestContext {
   const headers = request.headers;
-  const cf = (request as any).cf || {};
+  const cf = (request as RequestWithCF).cf || {};
   
   return {
     id: generateRequestId(),
@@ -227,7 +237,7 @@ export function setResponseHeaders(
 export function createErrorResponse(
   status: number,
   message: string,
-  details?: any,
+  details?: unknown,
   context?: RequestContext
 ): Response {
   const error = {
@@ -258,7 +268,7 @@ export function createErrorResponse(
 export function log(
   level: LogLevel,
   message: string,
-  metadata?: Record<string, any>,
+  metadata?: Record<string, unknown>,
   requestId?: string
 ): void {
   const entry: LogEntry = {

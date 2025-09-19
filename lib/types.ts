@@ -118,11 +118,23 @@ export interface IngredientAlternative {
   reason?: string;
 }
 
+// 前端传递的API密钥结构
+export interface FrontendApiKeys {
+  deepseek?: string;
+  doubao?: {
+    key: string;
+    endpointId: string;
+  };
+  qwen?: string;
+  glm?: string;
+  gemini?: string;
+}
+
 // 错误类型
 export interface AppError {
   code: string;
   message: string;
-  details?: any;
+  details?: unknown;
 }
 
 // 加载状态类型

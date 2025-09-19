@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
@@ -61,16 +61,17 @@ export async function GET() {
             model: 'gemini-pro'
           });
 
-        } catch (fallbackError) {
+        } catch {
           throw modelError; // 抛出原始错误
         }
       }
 
-    } catch (geminiError: any) {
+    } catch (geminiError) {
       console.error('Gemini API错误:', geminiError);
 
-      let errorDetails = geminiError.message || '未知错误';
-      let suggestions = [];
+      const fallbackError = geminiError instanceof Error ? geminiError : new Error('未知错误');
+      const errorDetails = fallbackError.message;
+      const suggestions: string[] = [];
 
       if (errorDetails.includes('API_KEY_INVALID')) {
         suggestions.push('API密钥无效，请检查密钥是否正确');

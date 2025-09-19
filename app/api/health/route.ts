@@ -1,10 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { withHealthCheckWrapper } from '@/lib/api-wrapper';
 import { isCloudflareWorkers, getEnvVar, log } from '@/lib/cloudflare-utils';
 import { getAvailableProviders } from '@/lib/ai-providers';
 
+type CloudflareServiceStatus = 'unknown' | 'available' | 'not-configured' | 'error';
+
+interface CloudflareServices {
+  kv: CloudflareServiceStatus;
+  d1: CloudflareServiceStatus;
+  r2: CloudflareServiceStatus;
+}
+
+type CloudflareGlobal = typeof globalThis & {
+  CACHE?: { get: (key: string) => Promise<unknown> };
+  DB?: unknown;
+  ASSETS?: unknown;
+};
+
 // 健康检查处理器
-async function healthCheckHandler(request: NextRequest): Promise<NextResponse> {
+async function healthCheckHandler(): Promise<NextResponse> {
   const startTime = Date.now();
   
   try {
@@ -110,20 +124,21 @@ async function healthCheckHandler(request: NextRequest): Promise<NextResponse> {
 }
 
 // 检查Cloudflare服务状态
-async function checkCloudflareServices() {
-  const services = {
+async function checkCloudflareServices(): Promise<CloudflareServices> {
+  const services: CloudflareServices = {
     kv: 'unknown',
     d1: 'unknown',
-    r2: 'unknown'
+    r2: 'unknown',
   };
 
   try {
+    const cloudflareGlobal = globalThis as CloudflareGlobal;
     // 检查KV存储
-    if (typeof globalThis !== 'undefined' && (globalThis as any).CACHE) {
+    if (typeof globalThis !== 'undefined' && cloudflareGlobal.CACHE) {
       try {
-        await (globalThis as any).CACHE.get('health-check');
+        await cloudflareGlobal.CACHE.get('health-check');
         services.kv = 'available';
-      } catch (error) {
+      } catch {
         services.kv = 'error';
       }
     } else {
@@ -131,14 +146,14 @@ async function checkCloudflareServices() {
     }
 
     // 检查D1数据库
-    if (typeof globalThis !== 'undefined' && (globalThis as any).DB) {
+    if (typeof globalThis !== 'undefined' && cloudflareGlobal.DB) {
       services.d1 = 'available';
     } else {
       services.d1 = 'not-configured';
     }
 
     // 检查R2存储
-    if (typeof globalThis !== 'undefined' && (globalThis as any).ASSETS) {
+    if (typeof globalThis !== 'undefined' && cloudflareGlobal.ASSETS) {
       services.r2 = 'available';
     } else {
       services.r2 = 'not-configured';
@@ -171,7 +186,7 @@ function getMemoryUsage() {
         percentage: Math.round((usage.heapUsed / usage.heapTotal) * 100)
       };
     }
-  } catch (error) {
+  } catch {
     // 忽略错误
   }
 
@@ -195,7 +210,7 @@ function getUptime() {
       const seconds = Math.floor(uptime % 60);
       return `${hours}h ${minutes}m ${seconds}s`;
     }
-  } catch (error) {
+  } catch {
     // 忽略错误
   }
 
@@ -206,7 +221,7 @@ function getUptime() {
 export const GET = withHealthCheckWrapper(healthCheckHandler);
 
 // 支持HEAD请求用于简单的存活检查
-export async function HEAD(request: NextRequest): Promise<Response> {
+export async function HEAD(): Promise<Response> {
   try {
     const providers = getAvailableProviders();
     const isHealthy = providers.length > 0;
@@ -219,7 +234,7 @@ export async function HEAD(request: NextRequest): Promise<Response> {
         'X-Runtime': isCloudflareWorkers() ? 'cloudflare-workers' : 'nodejs'
       }
     });
-  } catch (error) {
+  } catch {
     return new Response(null, {
       status: 500,
       headers: {

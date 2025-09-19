@@ -219,7 +219,6 @@ export function getImageOrientation(file: File): Promise<number> {
         offset += 2;
         
         if (marker === 0xFFE1) { // EXIF marker
-          const exifLength = dataView.getUint16(offset);
           offset += 2;
           
           // 查找方向信息

@@ -25,7 +25,7 @@ declare global {
     QUEUE?: Queue;
     
     // 其他配置
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   // 扩展全局命名空间
@@ -66,7 +66,7 @@ export interface APICacheConfig {
 export interface CloudflareError {
   status: number;
   message: string;
-  details?: any;
+  details?: unknown;
   timestamp: string;
 }
 
@@ -127,7 +127,7 @@ export interface LogEntry {
   message: string;
   timestamp: string;
   requestId?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 // 环境检测工具

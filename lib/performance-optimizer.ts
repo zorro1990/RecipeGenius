@@ -1,10 +1,9 @@
 // Cloudflare Workers性能优化工具
 
-import type { 
-  CacheStrategy, 
-  APICacheConfig,
+import type {
+  CacheStrategy,
   PerformanceMetrics,
-  RequestContext 
+  RequestContext
 } from '@/types/cloudflare';
 import { CloudflareCache, log } from './cloudflare-utils';
 
@@ -111,7 +110,7 @@ export class PerformanceMonitor {
       if (typeof process !== 'undefined' && process.memoryUsage) {
         return process.memoryUsage().heapUsed;
       }
-    } catch (error) {
+    } catch {
       // 忽略错误
     }
     return 0;
@@ -150,9 +149,9 @@ export class SmartCacheManager {
   }
 
   // 智能缓存API响应
-  async cacheAPIResponse(
+  async cacheAPIResponse<T>(
     key: string,
-    data: any,
+    data: T,
     options?: {
       type?: 'static' | 'api' | 'dynamic';
       customTTL?: number;
@@ -185,8 +184,8 @@ export class SmartCacheManager {
   }
 
   // 获取缓存的API响应
-  async getCachedAPIResponse(key: string): Promise<{
-    data: any;
+  async getCachedAPIResponse<T>(key: string): Promise<{
+    data: T;
     isStale: boolean;
     age: number;
   } | null> {
@@ -194,7 +193,13 @@ export class SmartCacheManager {
       const cached = await this.cache.get(`smart:${key}`);
       if (!cached) return null;
 
-      const cacheData = JSON.parse(cached);
+      const cacheData = JSON.parse(cached) as {
+        data: T;
+        timestamp: number;
+        ttl: number;
+        tags: string[];
+        type: keyof CacheStrategy;
+      };
       const now = Date.now();
       const age = now - cacheData.timestamp;
       const maxAge = cacheData.ttl * 1000;
@@ -272,6 +277,10 @@ export class SmartCacheManager {
             }
           }
         } catch (error) {
+          log('warn', 'Failed to parse cached API response', {
+            key: key.name,
+            error: error instanceof Error ? error.message : 'Unknown error',
+          });
           // 如果解析失败，删除这个缓存项
           await this.cache.delete(key.name);
           cleanedCount++;

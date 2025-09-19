@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { analyzeNutrition, withRetry } from '@/lib/ai-service';
-import { Recipe, NutritionAnalysisRequest, ApiResponse, NutritionInfo } from '@/lib/types';
+import { NutritionAnalysisRequest, ApiResponse, NutritionInfo } from '@/lib/types';
 import { formatErrorMessage } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
