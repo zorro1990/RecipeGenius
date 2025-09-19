@@ -1,6 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Recipe, UserPreferences, ApiResponse } from '@/lib/types';
+import { Recipe, RecipeStep, StepSkillLevel } from '@/lib/types';
 import { generateId } from '@/lib/utils';
+
+function buildMockSteps(ingredients: string[], difficulty: Recipe['difficulty']): RecipeStep[] {
+  const skillLevelMap: Record<Recipe['difficulty'], StepSkillLevel> = {
+    easy: 'basic',
+    medium: 'intermediate',
+    hard: 'advanced',
+  };
+
+  const descriptions = [
+    `将${ingredients[0]}洗净切好备用`,
+    '热锅下油，爆香蒜蓉',
+    `下入${ingredients[0]}翻炒至半熟`,
+    `加入${ingredients.slice(1).join('、')}继续炒制`,
+    '调入适量盐、生抽调味',
+    '炒至食材熟透即可出锅装盘'
+  ];
+
+  const baseDuration: Record<Recipe['difficulty'], [number, number]> = {
+    easy: [3, 6],
+    medium: [5, 9],
+    hard: [7, 12],
+  };
+
+  const [min, max] = baseDuration[difficulty];
+
+  return descriptions.map((description, index) => {
+    const ratio = descriptions.length > 1 ? index / (descriptions.length - 1) : 0.5;
+    const duration = Math.round(min + (max - min) * ratio);
+    const shortTitle = description.split(/，|。|；|,/)[0]?.trim() || `步骤 ${index + 1}`;
+
+    return {
+      index: index + 1,
+      title: shortTitle,
+      description,
+      duration,
+      skillLevel: skillLevelMap[difficulty],
+    };
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,6 +49,8 @@ export async function POST(request: NextRequest) {
     };
 
     await new Promise(resolve => setTimeout(resolve, 2000));
+
+    const difficulty = preferences.difficulty || 'easy';
 
     const mockRecipe: Recipe = {
       id: generateId(),
@@ -21,17 +62,10 @@ export async function POST(request: NextRequest) {
         unit: '',
         category: 'other' as const
       })),
-      steps: [
-        `将${ingredients[0]}洗净切好备用`,
-        '热锅下油，爆香蒜蓉',
-        `下入${ingredients[0]}翻炒至半熟`,
-        `加入${ingredients.slice(1).join('、')}继续炒制`,
-        '调入适量盐、生抽调味',
-        '炒至食材熟透即可出锅装盘'
-      ],
+      steps: buildMockSteps(ingredients, difficulty),
       cookingTime: preferences.cookingTime || 30,
       servings: preferences.servings || 2,
-      difficulty: preferences.difficulty || 'easy',
+      difficulty,
       nutrition: {
         calories: 350,
         protein: 20,

@@ -2,13 +2,52 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ChefHat, Clock, Users, Star, Heart, Share2, Download, Filter } from 'lucide-react';
+import { ArrowLeft, ChefHat, Clock, Users, Star, Heart, Share2, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import type { RecipeStep, StepSkillLevel } from '@/lib/types';
+
+const STEP_SKILL_LEVEL_MAP: Record<'easy' | 'medium' | 'hard', StepSkillLevel> = {
+  easy: 'basic',
+  medium: 'intermediate',
+  hard: 'advanced',
+};
+
+const STEP_DURATION_RANGE: Record<'easy' | 'medium' | 'hard', [number, number]> = {
+  easy: [3, 6],
+  medium: [5, 10],
+  hard: [7, 15],
+};
+
+function deriveStepTitle(description: string, index: number): string {
+  const separators = ['，', '。', '；', ',', ';'];
+  for (const separator of separators) {
+    const [candidate] = description.split(separator);
+    if (candidate && candidate.trim().length > 2 && candidate.trim().length <= 18) {
+      return candidate.trim();
+    }
+  }
+  return `步骤 ${index + 1}`;
+}
+
+function convertSteps(stepTexts: string[], difficulty: 'easy' | 'medium' | 'hard'): RecipeStep[] {
+  const [min, max] = STEP_DURATION_RANGE[difficulty];
+  return stepTexts.map((text, index) => {
+    const ratio = stepTexts.length > 1 ? index / (stepTexts.length - 1) : 0.5;
+    const duration = Math.round(min + (max - min) * ratio);
+    return {
+      index: index + 1,
+      title: deriveStepTitle(text, index),
+      description: text,
+      duration,
+      skillLevel: STEP_SKILL_LEVEL_MAP[difficulty],
+    };
+  });
+}
 
 // 示例菜谱数据
-const exampleRecipes = [
+const rawExampleRecipes = [
   {
     id: '1',
     title: '西红柿鸡蛋面',
@@ -695,6 +734,11 @@ const exampleRecipes = [
     ]
   },
 ];
+
+const exampleRecipes = rawExampleRecipes.map((recipe) => ({
+  ...recipe,
+  steps: convertSteps(recipe.steps, recipe.difficulty),
+}));
 
 export default function ExamplesPage() {
   const [selectedCuisine, setSelectedCuisine] = useState<string>('全部');

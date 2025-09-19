@@ -24,13 +24,26 @@ export interface HealthInfo {
   healthTips: string[]; // 健康建议
 }
 
+// 菜谱步骤所需技巧级别
+export type StepSkillLevel = 'basic' | 'intermediate' | 'advanced';
+
+// 菜谱步骤接口
+export interface RecipeStep {
+  index: number; // 步骤序号，从1开始
+  title: string; // 步骤标题
+  description: string; // 详细说明
+  duration?: number; // 预计耗时（分钟）
+  skillLevel: StepSkillLevel; // 所需技巧等级
+  tips?: string[]; // 可选的额外提示
+}
+
 // 菜谱接口
 export interface Recipe {
   id: string;
   title: string;
   description: string;
   ingredients: Ingredient[];
-  steps: string[];
+  steps: RecipeStep[];
   cookingTime: number; // 分钟
   servings: number;
   difficulty: 'easy' | 'medium' | 'hard';

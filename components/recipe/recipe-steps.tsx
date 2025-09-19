@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Recipe } from '@/lib/types';
+import { Recipe, RecipeStep } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,34 @@ interface RecipeStepsProps {
 export function RecipeSteps({ recipe }: RecipeStepsProps) {
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [currentStep, setCurrentStep] = useState(0);
+
+  const steps = recipe.steps || [];
+  const totalSteps = steps.length;
+
+  const getSkillBadge = (skillLevel: RecipeStep['skillLevel']) => {
+    switch (skillLevel) {
+      case 'basic':
+        return {
+          label: '基础技巧',
+          className: 'bg-green-100 text-green-700'
+        };
+      case 'intermediate':
+        return {
+          label: '进阶技巧',
+          className: 'bg-yellow-100 text-yellow-700'
+        };
+      case 'advanced':
+        return {
+          label: '高级技巧',
+          className: 'bg-red-100 text-red-700'
+        };
+      default:
+        return {
+          label: '通用技巧',
+          className: 'bg-gray-100 text-gray-700'
+        };
+    }
+  };
 
   const toggleStepCompletion = (stepIndex: number) => {
     const newCompleted = new Set(completedSteps);
@@ -30,7 +58,7 @@ export function RecipeSteps({ recipe }: RecipeStepsProps) {
   };
 
   const nextStep = () => {
-    if (currentStep < recipe.steps.length - 1) {
+    if (currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -42,8 +70,12 @@ export function RecipeSteps({ recipe }: RecipeStepsProps) {
   };
 
   const completedCount = completedSteps.size;
-  const totalSteps = recipe.steps.length;
   const progressPercentage = (completedCount / totalSteps) * 100;
+
+  const activeStep = steps[currentStep];
+  if (!activeStep) {
+    return null;
+  }
 
   return (
     <div className="space-y-6">
@@ -72,18 +104,40 @@ export function RecipeSteps({ recipe }: RecipeStepsProps) {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-8 h-8 bg-orange-500 text-white rounded-full text-sm font-bold">
-                {currentStep + 1}
-              </div>
-              <span className="text-lg font-semibold">当前步骤</span>
+            <div className="flex items-center justify-center w-8 h-8 bg-orange-500 text-white rounded-full text-sm font-bold">
+              {currentStep + 1}
             </div>
-            <Timer className="size-5 text-orange-500" />
+            <span className="text-lg font-semibold">当前步骤</span>
           </div>
-        </CardHeader>
-        <CardContent>
-          <p className="text-gray-800 leading-relaxed text-lg">
-            {recipe.steps[currentStep]}
+          <Timer className="size-5 text-orange-500" />
+        </div>
+      </CardHeader>
+      <CardContent>
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <h3 className="text-lg font-semibold text-gray-900">{activeStep.title}</h3>
+            <Badge className={getSkillBadge(activeStep.skillLevel).className}>
+              {getSkillBadge(activeStep.skillLevel).label}
+            </Badge>
+            {typeof activeStep.duration === 'number' && (
+              <Badge variant="outline" className="text-xs">
+                预计 {activeStep.duration} 分钟
+              </Badge>
+            )}
+          </div>
+          <p className="text-gray-800 leading-relaxed text-base whitespace-pre-wrap">
+            {activeStep.description}
           </p>
+
+          {activeStep.tips && activeStep.tips.length > 0 && (
+            <div className="mt-4 space-y-2">
+              {activeStep.tips.map((tip, index) => (
+                <div key={index} className="flex items-start gap-2 text-sm text-orange-700">
+                  <Lightbulb className="size-4 mt-0.5" />
+                  <span>{tip}</span>
+                </div>
+              ))}
+            </div>
+          )}
           
           <div className="flex gap-2 mt-4">
             <Button 
@@ -114,7 +168,7 @@ export function RecipeSteps({ recipe }: RecipeStepsProps) {
             </Button>
             <Button 
               onClick={nextStep}
-              disabled={currentStep === recipe.steps.length - 1}
+              disabled={currentStep === totalSteps - 1}
               size="sm"
             >
               下一步
@@ -130,7 +184,7 @@ export function RecipeSteps({ recipe }: RecipeStepsProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {recipe.steps.map((step, index) => (
+            {steps.map((step, index) => (
               <div 
                 key={index}
                 className={`flex gap-4 p-4 rounded-lg border transition-all cursor-pointer ${
@@ -163,15 +217,40 @@ export function RecipeSteps({ recipe }: RecipeStepsProps) {
                 </div>
                 
                 <div className="flex-1">
-                  <p className={`leading-relaxed ${
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <span className={`text-sm font-semibold ${
+                      index === currentStep ? 'text-gray-900' : 'text-gray-700'
+                    }`}>
+                      {step.title}
+                    </span>
+                    <Badge className={`${getSkillBadge(step.skillLevel).className} text-[11px]`}> 
+                      {getSkillBadge(step.skillLevel).label}
+                    </Badge>
+                    {typeof step.duration === 'number' && (
+                      <Badge variant="outline" className="text-[11px]">
+                        {step.duration} 分钟
+                      </Badge>
+                    )}
+                  </div>
+                  <p className={`leading-relaxed text-sm ${
                     completedSteps.has(index) 
                       ? 'text-gray-600 line-through' 
                       : index === currentStep
-                      ? 'text-gray-900 font-medium'
+                      ? 'text-gray-900'
                       : 'text-gray-800'
                   }`}>
-                    {step}
+                    {step.description}
                   </p>
+                  {step.tips && step.tips.length > 0 && (
+                    <ul className="mt-2 space-y-1 text-xs text-orange-700">
+                      {step.tips.map((tip, tipIndex) => (
+                        <li key={tipIndex} className="flex gap-1">
+                          <Lightbulb className="size-3 mt-0.5 flex-shrink-0" />
+                          <span>{tip}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             ))}

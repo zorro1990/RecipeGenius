@@ -6,10 +6,48 @@ import { ArrowLeft, ChefHat, Clock, Users, Star, Heart, Share2, Download, CheckC
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import type { RecipeStep, StepSkillLevel } from '@/lib/types';
+
+const STEP_SKILL_LEVEL_MAP: Record<'easy' | 'medium' | 'hard', StepSkillLevel> = {
+  easy: 'basic',
+  medium: 'intermediate',
+  hard: 'advanced',
+};
+
+const STEP_DURATION_RANGE: Record<'easy' | 'medium' | 'hard', [number, number]> = {
+  easy: [3, 6],
+  medium: [5, 10],
+  hard: [7, 15],
+};
+
+function deriveStepTitle(description: string, index: number): string {
+  const separators = ['，', '。', '；', ',', ';'];
+  for (const separator of separators) {
+    const [candidate] = description.split(separator);
+    if (candidate && candidate.trim().length > 2 && candidate.trim().length <= 18) {
+      return candidate.trim();
+    }
+  }
+  return `步骤 ${index + 1}`;
+}
+
+function convertSteps(stepTexts: string[], difficulty: 'easy' | 'medium' | 'hard'): RecipeStep[] {
+  const [min, max] = STEP_DURATION_RANGE[difficulty];
+  return stepTexts.map((text, index) => {
+    const ratio = stepTexts.length > 1 ? index / (stepTexts.length - 1) : 0.5;
+    const duration = Math.round(min + (max - min) * ratio);
+    return {
+      index: index + 1,
+      title: deriveStepTitle(text, index),
+      description: text,
+      duration,
+      skillLevel: STEP_SKILL_LEVEL_MAP[difficulty],
+    };
+  });
+}
 
 // 示例菜谱数据（实际项目中应该从API获取）
-const recipeData = {
+const rawRecipeData = {
   '1': {
     id: '1',
     title: '西红柿鸡蛋面',
@@ -663,7 +701,17 @@ const recipeData = {
       '包制时要留出蒸发空间'
     ]
   }
-};
+} as const;
+
+const recipeData = Object.fromEntries(
+  Object.entries(rawRecipeData).map(([id, recipe]) => [
+    id,
+    {
+      ...recipe,
+      steps: convertSteps(recipe.steps, recipe.difficulty),
+    },
+  ])
+) as Record<string, typeof rawRecipeData[keyof typeof rawRecipeData] & { steps: RecipeStep[] }>;
 
 export default function RecipeDetailPage() {
   const params = useParams();
@@ -807,13 +855,41 @@ export default function RecipeDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recipe.steps.map((step, index) => (
-                    <div key={index} className="flex gap-4">
+                  {recipe.steps.map((step) => (
+                    <div key={step.index} className="flex gap-4 p-4 rounded-lg border border-gray-100 bg-gray-50">
                       <div className="flex-shrink-0 w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                        {index + 1}
+                        {step.index}
                       </div>
-                      <div className="flex-1">
-                        <p className="text-gray-700 leading-relaxed">{step}</p>
+                      <div className="flex-1 space-y-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h4 className="text-base font-semibold text-gray-900">{step.title}</h4>
+                          <Badge className={step.skillLevel === 'advanced'
+                            ? 'bg-red-100 text-red-700'
+                            : step.skillLevel === 'intermediate'
+                              ? 'bg-yellow-100 text-yellow-700'
+                              : 'bg-green-100 text-green-700'}>
+                            {step.skillLevel === 'advanced'
+                              ? '高级技巧'
+                              : step.skillLevel === 'intermediate'
+                                ? '进阶技巧'
+                                : '基础技巧'}
+                          </Badge>
+                          {typeof step.duration === 'number' && (
+                            <Badge variant="outline" className="text-xs">
+                              预计 {step.duration} 分钟
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-wrap">
+                          {step.description}
+                        </p>
+                        {step.tips && step.tips.length > 0 && (
+                          <ul className="text-xs text-orange-700 space-y-1">
+                            {step.tips.map((tip, tipIndex) => (
+                              <li key={tipIndex}>• {tip}</li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
                     </div>
                   ))}

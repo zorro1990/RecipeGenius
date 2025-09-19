@@ -322,14 +322,33 @@ export const RECIPE_PROMPT_TEMPLATE = `
 - 鸡蛋过敏 = 不能有鸡蛋及含鸡蛋的任何制品
 - 安全第一，宁可简单也不能违反限制
 
-请以JSON格式返回菜谱，包含以下字段：
+🧠 难度与步骤规则：
+- easy（简单）：至少5个步骤，每步聚焦基础技巧与低风险操作，描述要简洁易懂，并标记skillLevel为"basic"
+- medium（中等）：7-9个步骤，需要包含火候控制、分段处理等技巧，skillLevel可混合"basic"与"intermediate"
+- hard（困难）：9-12个步骤，涵盖高级技巧（多段火候、预处理、摆盘等），至少一半步骤使用"advanced" skillLevel
+
+✍️ 步骤写作要求：
+- 每个步骤需包含动作、关键细节和时间提示，description至少两句话
+- duration为整数分钟，体现步骤耗时
+- tips字段可选，但若提供必须给出实用提醒或注意事项
+
+请严格按照以下JSON结构返回完整菜谱：
 {
   "title": "菜谱名称",
   "description": "简短描述（50字以内）",
   "ingredients": [
     {"name": "食材名", "quantity": "数量", "unit": "单位"}
   ],
-  "steps": ["步骤1", "步骤2", "步骤3"],
+  "steps": [
+    {
+      "index": 1,
+      "title": "步骤标题（简短概括核心动作）",
+      "description": "详细步骤说明（至少两句，包含具体操作、火候、时间提示和专业建议）",
+      "duration": 6,
+      "skillLevel": "basic/intermediate/advanced",
+      "tips": ["提示1", "提示2"]
+    }
+  ],
   "cookingTime": 总烹饪时间(分钟),
   "servings": 份数,
   "difficulty": "easy/medium/hard",
@@ -353,15 +372,11 @@ export const RECIPE_PROMPT_TEMPLATE = `
 
 请确保：
 1. 严格遵守用户的饮食限制、过敏源和健康状况要求
-2. 菜谱实用且可操作
-3. 食材用量准确
-4. 步骤清晰详细
-5. 营养信息合理
-6. 如果用户有健康状况，必须在healthInfo中详细说明：
-   - 列出被过滤的食材及原因
-   - 说明菜谱对用户健康的益处
-   - 提供针对性的营养建议和健康提醒
-7. 只返回JSON，不要其他文字
+2. 菜谱实用且可操作，步骤数量符合难度要求
+3. 食材用量准确，烹饪时间合理
+4. 步骤细致且富有指导性，突出火候、口感和安全注意事项
+5. 营养信息合理，healthInfo根据健康状况提供具体指导
+6. 只返回JSON，不要其他文字
 `;
 
 // 营养分析提示词模板

@@ -118,7 +118,13 @@ export default function RecipePage() {
 
   const handleDownload = () => {
     if (!recipe) return;
-    
+
+    const skillLabelMap: Record<string, string> = {
+      basic: '基础技巧',
+      intermediate: '进阶技巧',
+      advanced: '高级技巧',
+    };
+
     // 生成菜谱文本
     const recipeText = `
 ${recipe.title}
@@ -132,7 +138,12 @@ ${recipe.description}
 ${recipe.ingredients.map(ing => `• ${ing.name} ${ing.quantity}${ing.unit}`).join('\n')}
 
 制作步骤：
-${recipe.steps.map((step, index) => `${index + 1}. ${step}`).join('\n\n')}
+${recipe.steps.map((step, index) => {
+  const durationText = typeof step.duration === 'number' ? `（约${step.duration}分钟）` : '';
+  const skillLabel = skillLabelMap[step.skillLevel] || '通用技巧';
+  const tipsText = step.tips && step.tips.length > 0 ? `\n   - 提示：${step.tips.join('；')}` : '';
+  return `${index + 1}. ${step.title}${durationText}【${skillLabel}】\n   ${step.description}${tipsText}`;
+}).join('\n\n')}
 
 ${recipe.tips ? `\n烹饪小贴士：\n${recipe.tips.map(tip => `• ${tip}`).join('\n')}` : ''}
 

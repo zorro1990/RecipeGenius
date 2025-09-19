@@ -1,4 +1,4 @@
-import { Recipe, UserPreferences, NutritionInfo, HealthInfo, COMMON_HEALTH_CONDITIONS } from './types';
+import { Recipe, RecipeStep, StepSkillLevel, UserPreferences, NutritionInfo, COMMON_HEALTH_CONDITIONS } from './types';
 import { extractJSON, safeJSONParse, generateId } from './utils';
 import {
   callRecipeAI,
@@ -11,6 +11,112 @@ import {
 /**
  * 构建完整的偏好描述文本
  */
+const MIN_STEPS_BY_DIFFICULTY: Record<'easy' | 'medium' | 'hard', number> = {
+  easy: 5,
+  medium: 7,
+  hard: 9,
+};
+
+const DIFFICULTY_SKILL_LEVEL: Record<'easy' | 'medium' | 'hard', StepSkillLevel> = {
+  easy: 'basic',
+  medium: 'intermediate',
+  hard: 'advanced',
+};
+
+const STEP_SKILL_LEVEL_VALUES: StepSkillLevel[] = ['basic', 'intermediate', 'advanced'];
+
+function buildDifficultyGuidance(difficulty: 'easy' | 'medium' | 'hard'): string {
+  switch (difficulty) {
+    case 'easy':
+      return '🧑‍🍳【烹饪难度】：简单。请设计至少5个步骤，每步使用通俗易懂的语言，强调基础技巧、低风险操作和省时逻辑。描述中要包含动词、具体细节和时间提示（3-6分钟），skillLevel标记为"basic"。';
+    case 'medium':
+      return '👨‍🍳【烹饪难度】：中等。请提供7-9个步骤，包含食材预处理、火候控制和组合技法。每步描述需给出关键细节与时间（5-10分钟），同时合理混合"basic"和"intermediate"技巧，突出要点和节奏。';
+    case 'hard':
+      return '👩‍🍳【烹饪难度】：困难。请准备9-12个步骤，展示高级烹饪技巧（如多段火候、分步调味、摆盘）。每步描述需深入细节并给出时间（7-15分钟），skillLevel应包含"advanced"，并指明注意事项与专业要领。';
+    default:
+      return '🧑‍🍳 请根据难度使步骤数量、细致程度与技巧需求相匹配。';
+  }
+}
+
+function deriveStepTitle(text: string, index: number): string {
+  const separators = ['，', '。', '；', ',', ';'];
+  for (const separator of separators) {
+    const [candidate] = text.split(separator);
+    if (candidate && candidate.trim().length > 2 && candidate.trim().length <= 18) {
+      return candidate.trim();
+    }
+  }
+  return `步骤 ${index + 1}`;
+}
+
+function deriveStepDuration(index: number, total: number, difficulty: 'easy' | 'medium' | 'hard'): number {
+  const ranges: Record<'easy' | 'medium' | 'hard', [number, number]> = {
+    easy: [3, 6],
+    medium: [5, 10],
+    hard: [7, 15],
+  };
+  const [min, max] = ranges[difficulty];
+  if (total <= 1) return Math.round((min + max) / 2);
+  const ratio = index / (total - 1);
+  return Math.round(min + (max - min) * ratio);
+}
+
+function normalizeRecipeSteps(rawSteps: unknown, difficulty: 'easy' | 'medium' | 'hard'): RecipeStep[] {
+  if (!Array.isArray(rawSteps)) {
+    return [];
+  }
+
+  const steps = rawSteps
+    .map((step, index) => {
+      if (typeof step === 'string') {
+        return {
+          index: index + 1,
+          title: deriveStepTitle(step, index),
+          description: step,
+          duration: deriveStepDuration(index, rawSteps.length, difficulty),
+          skillLevel: DIFFICULTY_SKILL_LEVEL[difficulty],
+        } as RecipeStep;
+      }
+
+      if (step && typeof step === 'object') {
+        const stepObject = step as Record<string, unknown>;
+        const description = typeof stepObject.description === 'string'
+          ? stepObject.description
+          : typeof stepObject.detail === 'string'
+            ? stepObject.detail
+            : typeof stepObject.instructions === 'string'
+              ? stepObject.instructions
+              : '';
+        const titleCandidate = typeof stepObject.title === 'string' ? stepObject.title : '';
+        const title = titleCandidate || deriveStepTitle(description || '', index);
+        const duration = typeof stepObject.duration === 'number'
+          ? stepObject.duration
+          : deriveStepDuration(index, rawSteps.length, difficulty);
+        const skillCandidate = typeof stepObject.skillLevel === 'string' ? stepObject.skillLevel : undefined;
+        const skillLevel: StepSkillLevel = skillCandidate && STEP_SKILL_LEVEL_VALUES.includes(skillCandidate as StepSkillLevel)
+          ? (skillCandidate as StepSkillLevel)
+          : DIFFICULTY_SKILL_LEVEL[difficulty];
+        const tips = Array.isArray(stepObject.tips)
+          ? stepObject.tips.filter((tip): tip is string => typeof tip === 'string' && tip.trim().length > 0)
+          : undefined;
+
+        return {
+          index: index + 1,
+          title: title || `步骤 ${index + 1}`,
+          description: description || '',
+          duration,
+          skillLevel,
+          tips,
+        } as RecipeStep;
+      }
+
+      return null;
+    })
+    .filter((step): step is RecipeStep => !!step && !!step.description);
+
+  return steps;
+}
+
 function buildPreferencesText(preferences: UserPreferences): string {
   const parts: string[] = [];
 
@@ -50,6 +156,9 @@ function buildPreferencesText(preferences: UserPreferences): string {
   if (preferences.cuisineType && preferences.cuisineType.length > 0) {
     parts.push(`【菜系偏好】：${preferences.cuisineType.join('、')}`);
   }
+
+  // 难度指引
+  parts.push(buildDifficultyGuidance(preferences.difficulty));
 
   // 健康状况（最重要，关乎用户健康）
   if (preferences.healthConditions && preferences.healthConditions.length > 0) {
@@ -120,6 +229,11 @@ export async function generateRecipe(
     }
 
     // 构建完整的菜谱对象
+    const normalizedSteps = normalizeRecipeSteps(recipeData.steps, preferences.difficulty);
+    if (normalizedSteps.length === 0) {
+      throw new Error('菜谱步骤生成失败，未获得有效的步骤列表');
+    }
+
     const recipe: Recipe = {
       id: generateId(),
       title: recipeData.title,
@@ -131,7 +245,7 @@ export async function generateRecipe(
             unit: ing.unit || ''
           }))
         : [],
-      steps: Array.isArray(recipeData.steps) ? recipeData.steps : [],
+      steps: normalizedSteps,
       cookingTime: typeof recipeData.cookingTime === 'number' 
         ? recipeData.cookingTime 
         : preferences.cookingTime,
@@ -173,6 +287,11 @@ export async function generateRecipe(
     };
 
     console.log('菜谱生成成功:', recipe.title);
+    const minStepsRequired = MIN_STEPS_BY_DIFFICULTY[recipe.difficulty];
+    if (recipe.steps.length < minStepsRequired) {
+      console.warn(`生成的菜谱步骤少于预期（${recipe.steps.length}/${minStepsRequired}）`);
+    }
+
     return recipe;
 
   } catch (error) {
