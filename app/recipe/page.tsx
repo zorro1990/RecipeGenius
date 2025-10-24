@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ApiResponse, Recipe } from '@/lib/types';
+import { ApiResponse, Recipe, UserPreferences } from '@/lib/types';
 import { RecipeCard } from '@/components/recipe/recipe-card';
 import { RecipeSteps } from '@/components/recipe/recipe-steps';
 import { HealthInfoComponent } from '@/components/recipe/health-info';
@@ -11,18 +11,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, ChefHat, RefreshCw, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { APIStatusIndicator } from '@/components/api-status-indicator';
+import { APISettingsModal } from '@/components/api-settings-modal';
 
 export default function RecipePage() {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [ingredients, setIngredients] = useState<string[]>([]);
+  const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [isAPISettingsOpen, setIsAPISettingsOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     // 从localStorage获取菜谱数据
     const storedRecipe = localStorage.getItem('currentRecipe');
     const storedIngredients = localStorage.getItem('recipeIngredients');
+    const storedPreferences = localStorage.getItem('recipePreferences');
     
     if (storedRecipe) {
       try {
@@ -31,6 +36,17 @@ export default function RecipePage() {
         
         if (storedIngredients) {
           setIngredients(JSON.parse(storedIngredients));
+        }
+
+        if (storedPreferences) {
+          try {
+            setPreferences(JSON.parse(storedPreferences));
+          } catch (prefError) {
+            console.warn('解析菜谱偏好失败:', prefError);
+            setPreferences(null);
+          }
+        } else {
+          setPreferences(null);
         }
       } catch (error) {
         console.error('解析菜谱数据失败:', error);
@@ -58,6 +74,7 @@ export default function RecipePage() {
     
     try {
       const preferences = JSON.parse(storedPreferences);
+      setPreferences(preferences);
       
       const response = await fetch('/api/generate-recipe', {
         method: 'POST',
@@ -209,6 +226,7 @@ ${recipe.tips ? `\n烹饪小贴士：\n${recipe.tips.map(tip => `• ${tip}`).jo
           </Link>
           
           <div className="flex items-center gap-2">
+            <APIStatusIndicator onOpenSettings={() => setIsAPISettingsOpen(true)} />
             <Button 
               variant="outline" 
               onClick={handleRegenerate}
@@ -251,6 +269,8 @@ ${recipe.tips ? `\n烹饪小贴士：\n${recipe.tips.map(tip => `• ${tip}`).jo
               onSave={handleSave}
               onShare={handleShare}
               onDownload={handleDownload}
+              preferences={preferences}
+              onOpenAPISettings={() => setIsAPISettingsOpen(true)}
             />
           </TabsContent>
           
@@ -298,6 +318,11 @@ ${recipe.tips ? `\n烹饪小贴士：\n${recipe.tips.map(tip => `• ${tip}`).jo
           </p>
         </div>
       </div>
+
+      <APISettingsModal
+        isOpen={isAPISettingsOpen}
+        onClose={() => setIsAPISettingsOpen(false)}
+      />
     </div>
   );
 }

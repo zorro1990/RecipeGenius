@@ -52,6 +52,8 @@ function getStoredProviderKey(keys: StoredAPIKeys, provider: ProviderKey): strin
       return keys.glm ?? '';
     case 'gemini':
       return keys.gemini ?? '';
+    case 'seedream':
+      return keys.seedream ?? '';
     default:
       return '';
   }
@@ -74,12 +76,16 @@ function setStoredProviderKey(target: StoredAPIKeys, provider: ProviderKey, valu
     case 'gemini':
       target.gemini = value;
       break;
+    case 'seedream':
+      target.seedream = value;
+      break;
   }
 }
 
 interface ProviderState {
   apiKey: string;
   endpointId?: string;
+  modelId?: string;
   isVisible: boolean;
   isValidating: boolean;
   isValid: boolean | null;
@@ -90,7 +96,7 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
   const [providers, setProviders] = useState<ProvidersState>({});
   const [showWarning, setShowWarning] = useState(true);
   const [preferredRecipeProvider, setPreferredRecipeProviderState] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'image' | 'recipe'>('image');
+  const [activeTab, setActiveTab] = useState<'image' | 'media' | 'recipe'>('image');
 
   // 初始化状态
   useEffect(() => {
@@ -102,6 +108,7 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
         initialState[provider] = {
           apiKey: getStoredProviderKey(stored, provider),
           endpointId: provider === 'doubao' ? stored.doubaoEndpointId || '' : undefined,
+          modelId: provider === 'seedream' ? stored.seedreamModelId || '' : undefined,
           isVisible: false,
           isValidating: false,
           isValid: null,
@@ -140,6 +147,9 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
           setStoredProviderKey(keysToStore, provider, state.apiKey.trim());
           if (provider === 'doubao' && state.endpointId?.trim()) {
             keysToStore.doubaoEndpointId = state.endpointId.trim();
+          }
+          if (provider === 'seedream' && state.modelId?.trim()) {
+            keysToStore.seedreamModelId = state.modelId.trim();
           }
         }
       });
@@ -193,28 +203,61 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
   };
 
   // 验证API密钥
-  const validateAPIKey = async (provider: string, apiKey: string) => {
+  const validateAPIKey = async (
+    provider: string,
+    apiKey: string,
+    options?: {
+      seedreamModelId?: string;
+    }
+  ) => {
+    const targetProvider = provider === 'seedream-test' ? 'seedream' : provider;
     if (!apiKey.trim()) {
-      updateProvider(provider, { isValid: null, error: null });
+      updateProvider(targetProvider as ProviderKey, { isValid: null, error: null });
       return;
     }
 
-    if (!validateAPIKeyFormat(provider, apiKey)) {
-      updateProvider(provider, {
+    if (!validateAPIKeyFormat(targetProvider, apiKey)) {
+      updateProvider(targetProvider as ProviderKey, {
         isValid: false,
         error: '密钥格式不正确'
       });
       return;
     }
 
-    updateProvider(provider, { isValidating: true, error: null });
+    const markUpdate = (updates: Partial<ProviderState>) => {
+      updateProvider(targetProvider as ProviderKey, updates);
+    };
+
+    if ((provider === 'seedream' || provider === 'seedream-test') && !options?.seedreamModelId) {
+      markUpdate({
+        isValid: false,
+        isValidating: false,
+        error: '请先填写模型 ID（如 doubao-seedream-4-0-xxxxxx）'
+      });
+      return;
+    }
+
+    if (provider === 'seedream') {
+      markUpdate({
+        isValid: true,
+        isValidating: false,
+        error: null
+      });
+      setTimeout(autoSaveAPIKeys, 500);
+      return;
+    }
+
+    markUpdate({ isValidating: true, error: null });
 
     try {
       // 调用测试API
       const testData = {
-        provider,
+        provider: provider === 'seedream-test' ? 'seedream' : provider,
         apiKey: apiKey.trim(),
-        endpointId: provider === 'doubao' ? providers[provider]?.endpointId : undefined
+        endpointId: provider === 'doubao' ? providers[provider]?.endpointId : undefined,
+        modelId: (provider === 'seedream-test' || provider === 'seedream')
+          ? options?.seedreamModelId
+          : undefined
       };
 
       const response = await fetch('/api/test-api-key', {
@@ -226,7 +269,7 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
       const result = await response.json() as { success: boolean; error?: string };
 
       if (result.success) {
-        updateProvider(provider, {
+        markUpdate({
           isValid: true,
           isValidating: false,
           error: null
@@ -234,7 +277,7 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
         // 验证成功后自动保存
         setTimeout(autoSaveAPIKeys, 500);
       } else {
-        updateProvider(provider, {
+        markUpdate({
           isValid: false,
           isValidating: false,
           error: result.error || '验证失败'
@@ -242,7 +285,7 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
       }
     } catch (error) {
       console.error('API密钥验证失败:', error);
-      updateProvider(provider, {
+      markUpdate({
         isValid: false,
         isValidating: false,
         error: '网络错误，请检查连接'
@@ -302,6 +345,16 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
               }`}
             >
               📸 图片识别配置
+            </button>
+            <button
+              onClick={() => setActiveTab('media')}
+              className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'media'
+                  ? 'border-purple-500 text-purple-600 bg-purple-50'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              🖼️ 菜品配图配置
             </button>
             <button
               onClick={() => setActiveTab('recipe')}
@@ -502,6 +555,223 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
                           {state.error}
                         </div>
                       )}
+
+                    </CardContent>
+                  </Card>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* 菜品配图配置 */}
+          {activeTab === 'media' && (
+            <div className="space-y-4">
+              <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🖼️</span>
+                  <span className="font-medium text-purple-800">菜品生成图片</span>
+                </div>
+                <p className="text-sm text-purple-700 mb-3">
+                  使用 Seedream 4.0 文生图模型，为生成的菜谱配上高质量成品图片。请先在此处配置火山引擎的 API Key。
+                </p>
+                <div className="text-xs text-purple-600 bg-white/50 p-2 rounded">
+                  💡 配图会自动缓存，刷新页面也会优先展示已生成的图片。
+                </div>
+              </div>
+
+              {(() => {
+                const provider: ProviderKey = 'seedream';
+                const info = API_PROVIDERS[provider];
+                const state: ProviderState = providers[provider] ?? {
+                  apiKey: '',
+                  modelId: '',
+                  isVisible: false,
+                  isValidating: false,
+                  isValid: null,
+                  error: null,
+                };
+
+                return (
+                  <Card key={provider} className="border-2">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">{info.icon}</span>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <CardTitle className="text-lg">{info.name}</CardTitle>
+                              <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+                                菜品配图
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2">{info.description}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {state.isValid === true && (
+                            <Badge variant="secondary" className="bg-green-100 text-green-800">
+                              <Check className="size-3 mr-1" />
+                              已保存
+                            </Badge>
+                          )}
+                          {state.isValid === false && (
+                            <Badge variant="destructive">
+                              <AlertTriangle className="size-3 mr-1" />
+                              验证失败
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 mb-2 block">
+                          API密钥 <span className="text-gray-500">({info.keyFormat})</span>
+                        </label>
+                        <div className="relative">
+                          <Input
+                            type={state.isVisible ? 'text' : 'password'}
+                            placeholder={`输入${info.name}的API密钥`}
+                            value={state.apiKey}
+                            onChange={(e) => {
+                              updateProvider(provider, {
+                                apiKey: e.target.value,
+                                isValid: null,
+                                error: null
+                              });
+                            }}
+                            onBlur={() => {
+                              const trimmedKey = state.apiKey.trim();
+                              const trimmedModel = state.modelId?.trim();
+                              if (trimmedKey && trimmedModel) {
+                                validateAPIKey(provider, trimmedKey, {
+                                  seedreamModelId: trimmedModel
+                                });
+                              }
+                            }}
+                            className="pr-20"
+                          />
+                          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                            {state.isValidating && (
+                              <Loader2 className="size-4 animate-spin text-gray-400" />
+                            )}
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => updateProvider(provider, { isVisible: !state.isVisible })}
+                              className="h-8 w-8 p-0"
+                            >
+                              {state.isVisible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                            </Button>
+                            {state.apiKey && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  clearProviderAPIKey(provider);
+                                  updateProvider(provider, { 
+                                    apiKey: '',
+                                    modelId: '',
+                                    isValid: null,
+                                    error: null 
+                                  });
+                                }}
+                                className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                              >
+                                <Trash2 className="size-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 mb-2 block">
+                          模型 ID / Endpoint 名称
+                          <span className="text-gray-500"> (例如 doubao-seedream-4-0-250828)</span>
+                        </label>
+                        <Input
+                          placeholder="输入火山引擎控制台提供的模型 ID"
+                          value={state.modelId || ''}
+                          onChange={(e) => updateProvider(provider, {
+                            modelId: e.target.value,
+                            isValid: null,
+                            error: null
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                          <div className="text-sm text-gray-600">
+                            还没有API密钥？
+                          </div>
+                          <a
+                            href={info.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 hover:text-blue-800 hover:underline font-medium flex items-center gap-1"
+                          >
+                            获取API密钥
+                            <ExternalLink className="size-3" />
+                          </a>
+                        </div>
+
+                        <div className="flex gap-2">
+                          {state.apiKey && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => validateAPIKey('seedream-test', state.apiKey, {
+                                seedreamModelId: state.modelId?.trim()
+                              })}
+                              disabled={state.isValidating || !state.modelId?.trim()}
+                              className="flex-1"
+                            >
+                              {state.isValidating ? (
+                                <>
+                                  <Loader2 className="size-4 mr-2 animate-spin" />
+                              测试生成接口
+                            </>
+                          ) : (
+                            <>
+                              🧪 测试生成接口
+                            </>
+                          )}
+                        </Button>
+                          )}
+                          {state.apiKey && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => validateAPIKey('seedream', state.apiKey, {
+                                seedreamModelId: state.modelId?.trim()
+                              })}
+                              disabled={state.isValidating || !state.modelId?.trim()}
+                              className="flex-1"
+                            >
+                              {state.isValidating ? (
+                                <>
+                                  <Loader2 className="size-4 mr-2 animate-spin" />
+                              保存密钥
+                            </>
+                          ) : (
+                            <>
+                              💾 保存密钥
+                            </>
+                          )}
+                        </Button>
+                          )}
+                        </div>
+
+                        {state.error && (
+                          <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
+                            {state.error}
+                          </div>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 );
@@ -539,7 +809,7 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
                 <CardContent>
                   <div className="space-y-3">
                     {Object.entries(API_PROVIDERS)
-                      .filter(([provider]) => provider !== 'doubao') // 排除豆包
+                      .filter(([provider]) => provider !== 'doubao' && provider !== 'seedream') // 排除非菜谱模型
                       .map(([provider, info]) => {
                         const state = providers[provider];
                         const isConfigured = state?.apiKey?.trim();
@@ -591,7 +861,7 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
               {/* 其他模型配置 */}
               <div className="space-y-4">
                 {(Object.entries(API_PROVIDERS) as Array<[ProviderKey, ProviderInfo]>)
-                  .filter(([provider]) => provider !== 'doubao')
+                  .filter(([provider]) => provider !== 'doubao' && provider !== 'seedream')
                   .map(([provider, info]) => {
               const state: ProviderState = providers[provider] ?? {
                 apiKey: '',

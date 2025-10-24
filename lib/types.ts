@@ -128,6 +128,8 @@ export interface FrontendApiKeys {
   qwen?: string;
   glm?: string;
   gemini?: string;
+  seedream?: string;
+  seedreamModelId?: string;
 }
 
 // 错误类型

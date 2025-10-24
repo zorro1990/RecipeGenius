@@ -157,7 +157,9 @@ export default function IngredientsPage() {
             } : undefined,
             qwen: apiKeys.qwen,
             glm: apiKeys.glm,
-            gemini: apiKeys.gemini
+            gemini: apiKeys.gemini,
+            seedream: apiKeys.seedream,
+            seedreamModelId: apiKeys.seedreamModelId
           } : undefined
         }),
         signal: controller.signal

@@ -3,10 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 // 测试API密钥有效性
 export async function POST(request: NextRequest) {
   try {
-    const { provider, apiKey, endpointId } = await request.json() as {
+    const { provider, apiKey, endpointId, modelId } = await request.json() as {
       provider: string;
       apiKey: string;
       endpointId?: string;
+      modelId?: string;
     };
 
     if (!provider || !apiKey) {
@@ -41,8 +42,14 @@ export async function POST(request: NextRequest) {
         case 'gemini':
           testResult = await testGeminiAPI(apiKey);
           break;
-        default:
-          errorMessage = '不支持的提供商';
+        case 'seedream':
+          if (!modelId) {
+            throw new Error('Seedream 需要提供模型 ID (例如 doubao-seedream-4-0-xxxxxx)');
+          }
+          testResult = await testSeedreamAPI(apiKey, modelId);
+          break;
+       default:
+         errorMessage = '不支持的提供商';
       }
     } catch (error) {
       console.error(`测试${provider}API失败:`, error);
@@ -277,6 +284,56 @@ async function testGeminiAPI(apiKey: string): Promise<boolean> {
 
   const data = await response.json();
   console.log('✅ Gemini API测试成功:', data);
+  return true;
+}
+
+// Seedream 图片生成 API 测试
+async function testSeedreamAPI(apiKey: string, modelId: string): Promise<boolean> {
+  console.log('🧪 测试Seedream API:', {
+    keyLength: apiKey.length,
+    keyPrefix: apiKey.substring(0, 8) + '...'
+  });
+
+  const response = await fetch('https://ark.cn-beijing.volces.com/api/v3/images/generations', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: modelId,
+      prompt: 'Connectivity test prompt for Seedream model',
+      negative_prompt: 'text, watermark, lowres',
+      size: '2K',
+      response_format: 'url',
+      stream: false,
+      watermark: true,
+      sequential_image_generation: 'disabled',
+      aspect_ratio: '1:1',
+      style_preset: 'food_photography',
+      steps: 5,
+      cfg_scale: 3
+    }),
+    signal: AbortSignal.timeout(15000)
+  });
+
+  console.log('📡 Seedream API响应:', {
+    status: response.status,
+    statusText: response.statusText,
+    ok: response.ok
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('❌ Seedream API错误:', errorText);
+    if (response.status === 401) {
+      throw new Error('Seedream API密钥无效，请检查密钥是否正确');
+    }
+    throw new Error(`Seedream API错误 (${response.status}): ${errorText}`);
+  }
+
+  const data = await response.json();
+  console.log('✅ Seedream API测试成功:', data?.data?.task_id || data);
   return true;
 }
 

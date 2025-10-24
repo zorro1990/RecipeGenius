@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -277,7 +277,7 @@ export function ImageUpload({
           <CardContent className="p-4">
             <div className="flex items-start gap-4">
               <div className="relative">
-                <Image
+                <NextImage
                   src={preview.dataUrl}
                   alt="预览"
                   width={96}

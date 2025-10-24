@@ -1,20 +1,30 @@
 'use client';
 
-import { Recipe } from '@/lib/types';
+import { Recipe, UserPreferences } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Clock, Users, ChefHat, Heart, Share2, Download } from 'lucide-react';
 import { formatCookingTime, calculateNutritionScore } from '@/lib/utils';
+import { RecipeImagePreview } from './recipe-image-preview';
 
 interface RecipeCardProps {
   recipe: Recipe;
   onSave?: () => void;
   onShare?: () => void;
   onDownload?: () => void;
+  preferences?: UserPreferences | null;
+  onOpenAPISettings?: () => void;
 }
 
-export function RecipeCard({ recipe, onSave, onShare, onDownload }: RecipeCardProps) {
+export function RecipeCard({
+  recipe,
+  onSave,
+  onShare,
+  onDownload,
+  preferences,
+  onOpenAPISettings
+}: RecipeCardProps) {
   const nutritionScore = calculateNutritionScore(recipe.nutrition);
   
   const getDifficultyColor = (difficulty: string) => {
@@ -153,6 +163,16 @@ export function RecipeCard({ recipe, onSave, onShare, onDownload }: RecipeCardPr
           <p className="text-xs text-gray-500 mt-2">
             * 营养数据为估算值，仅供参考
           </p>
+        </div>
+
+        {/* 菜谱配图 */}
+        <div>
+          <h3 className="text-lg font-semibold mb-3 text-gray-900">菜谱配图</h3>
+          <RecipeImagePreview
+            recipe={recipe}
+            preferences={preferences ?? undefined}
+            onOpenSettings={onOpenAPISettings}
+          />
         </div>
       </CardContent>
     </Card>

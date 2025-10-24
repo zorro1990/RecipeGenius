@@ -65,6 +65,9 @@ function omitFrontendApiKey(frontendApiKeys: FrontendApiKeys | undefined, provid
     case 'gemini':
       delete updated.gemini;
       break;
+    case 'seedream':
+      delete updated.seedream;
+      break;
     default:
       break;
   }
@@ -87,7 +90,8 @@ export function getAvailableProviders(frontendApiKeys?: FrontendApiKeys): AIProv
         doubaoEndpointId: frontendApiKeys.doubao?.endpointId,
         qwen: frontendApiKeys.qwen,
         glm: frontendApiKeys.glm,
-        gemini: frontendApiKeys.gemini
+        gemini: frontendApiKeys.gemini,
+        seedream: frontendApiKeys.seedream
       };
     } else if (typeof window !== 'undefined') {
       // 只在客户端环境下获取localStorage
@@ -102,7 +106,8 @@ export function getAvailableProviders(frontendApiKeys?: FrontendApiKeys): AIProv
     doubao: !!(storedKeys.doubao && storedKeys.doubaoEndpointId),
     qwen: !!storedKeys.qwen,
     glm: !!storedKeys.glm,
-    gemini: !!storedKeys.gemini
+    gemini: !!storedKeys.gemini,
+    seedream: !!storedKeys.seedream
   });
 
   // DeepSeek - 最优先，性价比之王，响应快

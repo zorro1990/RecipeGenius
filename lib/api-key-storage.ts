@@ -8,6 +8,8 @@ export interface StoredAPIKeys {
   qwen?: string;
   glm?: string;
   gemini?: string;
+  seedream?: string;
+  seedreamModelId?: string;
   // 新增：首选菜谱生成模型
   preferredRecipeProvider?: string;
 }
@@ -19,6 +21,8 @@ const STORED_KEY_NAMES: Array<keyof StoredAPIKeys> = [
   'qwen',
   'glm',
   'gemini',
+  'seedream',
+  'seedreamModelId',
   'preferredRecipeProvider',
 ];
 
@@ -86,6 +90,8 @@ export function validateAPIKeyFormat(provider: string, apiKey: string): boolean 
       return trimmed.length > 10; // 智谱AI格式较灵活
     case 'gemini':
       return trimmed.startsWith('AIza') && trimmed.length > 30;
+    case 'seedream':
+      return trimmed.length > 20;
     default:
       return trimmed.length > 5;
   }
@@ -160,6 +166,9 @@ export function clearProviderAPIKey(provider: string): void {
     const current = getStoredAPIKeys();
     if (isStoredApiKey(provider)) {
       delete current[provider];
+      if (provider === 'seedream' && isStoredApiKey('seedreamModelId')) {
+        delete current.seedreamModelId;
+      }
     }
     storeAPIKeys(current);
   } catch (error) {
@@ -173,7 +182,7 @@ export function hasAnyAPIKey(): boolean {
 
   // 检查简单字符串密钥
   const hasSimpleKey = Object.entries(stored).some(([provider, key]) => {
-    if (provider === 'doubao') return false; // 豆包单独处理
+    if (provider === 'doubao' || provider === 'seedreamModelId') return false; // 特殊处理
     return key && typeof key === 'string' && key.trim().length > 0;
   });
 
@@ -200,7 +209,7 @@ export function getConfiguredProviders(): string[] {
   const stored = getStoredAPIKeys();
   return Object.entries(stored)
     .filter(([provider, key]) => {
-      if (provider === 'doubao') {
+      if (provider === 'doubao' || provider === 'seedreamModelId') {
         return key && typeof key === 'string' && key.trim().length > 0;
       }
       return key && typeof key === 'string' && key.trim().length > 0;
@@ -260,6 +269,16 @@ export const API_PROVIDERS = {
     features: ['菜谱生成'],
     priority: '备选',
     usage: '可用于菜谱生成，需要科学上网'
+  },
+  seedream: {
+    name: 'Seedream 4.0 (火山引擎)',
+    description: '火山引擎文生图模型，生成高质量菜品图片',
+    website: 'https://www.volcengine.com/docs/82379/1541523',
+    keyFormat: 've-xxxxxxxx...',
+    icon: '🖼️',
+    features: ['菜谱配图'],
+    priority: '必需',
+    usage: '用于生成菜谱配图，需要在火山引擎控制台申请'
   }
 } as const;
 
