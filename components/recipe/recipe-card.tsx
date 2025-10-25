@@ -1,12 +1,20 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Recipe, UserPreferences } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Clock, Users, ChefHat, Heart, Share2, Download, Sparkles, AlertCircle } from 'lucide-react';
-import { formatCookingTime, calculateNutritionScore } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+import { calculateNutritionScore, formatCookingTime, cn } from '@/lib/utils';
+import {
+  Clock,
+  Users,
+  ChefHat,
+  Heart,
+  Share2,
+  Download,
+  Sparkles,
+  AlertCircle,
+} from 'lucide-react';
 import { RecipeImagePreview } from './recipe-image-preview';
 
 interface RecipeCardProps {
@@ -24,194 +32,174 @@ export function RecipeCard({
   onShare,
   onDownload,
   preferences,
-  onOpenAPISettings
+  onOpenAPISettings,
 }: RecipeCardProps) {
   const nutritionScore = calculateNutritionScore(recipe.nutrition);
-  
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'easy': return 'bg-green-100 text-green-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'hard': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+  const [mounted, setMounted] = useState(false);
 
-  const getDifficultyLabel = (difficulty: string) => {
-    switch (difficulty) {
-      case 'easy': return '简单';
-      case 'medium': return '中等';
-      case 'hard': return '困难';
-      default: return '未知';
-    }
-  };
-
-  const cuisineMatch = recipe.cuisineMatch;
-  const matchedKeywords = cuisineMatch?.matchedKeywords.slice(0, 4).join('、');
-  const missingKeywords = cuisineMatch?.missingKeywords.slice(0, 4).join('、');
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader className="space-y-4">
-        <div className="flex items-start justify-between">
-          <div className="space-y-2">
-            <CardTitle className="text-2xl md:text-3xl font-bold text-gray-900">
-              {recipe.title}
-            </CardTitle>
-            <CardDescription className="text-lg text-gray-600">
-              {recipe.description}
-            </CardDescription>
-          </div>
-          
-          {/* 营养评分 */}
-          <div className="text-center">
-            <div className="text-2xl font-bold text-orange-500">{nutritionScore}</div>
-            <div className="text-xs text-gray-500">营养评分</div>
-          </div>
-        </div>
-
-        {/* 基本信息 */}
-        <div className="flex flex-wrap gap-4 items-center">
-          <div className="flex items-center gap-2 text-gray-600">
-            <Clock className="size-4" />
-            <span className="text-sm">{formatCookingTime(recipe.cookingTime)}</span>
-          </div>
-          
-          <div className="flex items-center gap-2 text-gray-600">
-            <Users className="size-4" />
-            <span className="text-sm">{recipe.servings}人份</span>
-          </div>
-          
-          <div className="flex items-center gap-2 text-gray-600">
-            <ChefHat className="size-4" />
-            <Badge className={getDifficultyColor(recipe.difficulty)}>
-              {getDifficultyLabel(recipe.difficulty)}
-            </Badge>
-          </div>
-        </div>
-
-        {/* 标签 */}
-        {recipe.tags && recipe.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {recipe.tags.map((tag, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        )}
-
-        {cuisineMatch && (
-          <Alert variant={cuisineMatch.matched ? 'default' : 'destructive'}>
-            <AlertTitle className="flex items-center gap-2 text-sm">
-              {cuisineMatch.matched ? (
-                <>
-                  <Sparkles className="size-4 text-amber-500" />
-                  菜系匹配成功
-                </>
-              ) : (
-                <>
-                  <AlertCircle className="size-4 text-red-500" />
-                  菜系匹配未完全满足
-                </>
-              )}
-            </AlertTitle>
-            <AlertDescription className="text-xs leading-relaxed text-gray-600">
-              {cuisineMatch.matched ? (
-                <>
-                  已按照 <strong>{cuisineMatch.cuisine ?? cuisineMatch.requestedCuisines[0] ?? '目标菜系'}</strong> 生成。
-                  {matchedKeywords && <> 关键风味词：{matchedKeywords}。</>}
-                </>
-              ) : (
-                <>
-                  尝试 {cuisineMatch.attempts}/{cuisineMatch.maxAttempts} 次后仍未完全贴合 <strong>{cuisineMatch.requestedCuisines.join('、')}</strong>。
-                  {missingKeywords && <> 建议补充：{missingKeywords}。</>}
-                  {' '}请考虑调整菜系偏好或接受当前推荐。
-                </>
-              )}
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* 操作按钮 */}
-        <div className="flex gap-2">
-          {onSave && (
-            <Button variant="outline" size="sm" onClick={onSave}>
-              <Heart className="size-4 mr-2" />
-              收藏
-            </Button>
-          )}
-          {onShare && (
-            <Button variant="outline" size="sm" onClick={onShare}>
-              <Share2 className="size-4 mr-2" />
-              分享
-            </Button>
-          )}
-          {onDownload && (
-            <Button variant="outline" size="sm" onClick={onDownload}>
-              <Download className="size-4 mr-2" />
-              下载
-            </Button>
-          )}
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-6">
-        {/* 食材列表 */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3 text-gray-900">所需食材</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            {recipe.ingredients.map((ingredient, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <span className="font-medium text-gray-900">{ingredient.name}</span>
-                <span className="text-gray-600 text-sm">
-                  {ingredient.quantity} {ingredient.unit}
-                </span>
+    <section
+      className={cn(
+        'relative overflow-hidden rounded-[32px] bg-gradient-to-br from-orange-50 via-white to-rose-50 shadow-soft transition-all duration-500 ease-out',
+        mounted ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+      )}
+    >
+      <div className="grid gap-8 md:grid-cols-[minmax(0,3fr)_minmax(260px,2fr)]">
+        <div className="flex flex-col gap-6 p-8">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-xs font-semibold text-brand-primary shadow-soft">
+              <Sparkles className="size-4" /> 本次生成的专属菜谱
+            </div>
+            <div>
+              <h1 className="text-3xl font-semibold text-foreground md:text-4xl">{recipe.title}</h1>
+              <p className="mt-3 text-base text-muted-foreground md:text-lg">{recipe.description}</p>
+            </div>
+            {recipe.tags?.length ? (
+              <div className="flex flex-wrap gap-2">
+                {recipe.tags.map((tag) => (
+                  <Badge key={tag} variant="outline" className="rounded-full border-white/60 bg-white/70 text-xs text-muted-foreground">
+                    {tag}
+                  </Badge>
+                ))}
               </div>
-            ))}
+            ) : null}
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <MetricPill icon={Clock} label="烹饪时间" value={formatCookingTime(recipe.cookingTime)} />
+            <MetricPill icon={Users} label="用餐人数" value={`${recipe.servings} 人`} />
+            <MetricPill icon={ChefHat} label="技巧等级" value={difficultyLabel(recipe.difficulty)} tone={recipe.difficulty} />
+          </div>
+
+          <div className="rounded-2xl bg-white/75 p-5 shadow-soft">
+            <div className="flex items-baseline gap-3">
+              <span className="text-sm font-medium text-muted-foreground">营养评分</span>
+              <span className="text-4xl font-bold text-brand-primary">{nutritionScore}</span>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-5">
+              <NutritionStat label="卡路里" value={`${Math.round(recipe.nutrition.calories)} kcal`} />
+              <NutritionStat label="蛋白质" value={`${Math.round(recipe.nutrition.protein)} g`} />
+              <NutritionStat label="碳水" value={`${Math.round(recipe.nutrition.carbs)} g`} />
+              <NutritionStat label="脂肪" value={`${Math.round(recipe.nutrition.fat)} g`} />
+              <NutritionStat label="膳食纤维" value={`${Math.round(recipe.nutrition.fiber)} g`} />
+            </div>
+          </div>
+
+          {recipe.cuisineMatch ? <CuisineMatchBanner match={recipe.cuisineMatch} /> : null}
+
+          <div className="flex flex-wrap gap-3">
+            {onSave && (
+              <Button variant="outline" size="lg" onClick={onSave} className="rounded-full">
+                <Heart className="size-4" /> 收藏
+              </Button>
+            )}
+            {onShare && (
+              <Button variant="outline" size="lg" onClick={onShare} className="rounded-full">
+                <Share2 className="size-4" /> 分享
+              </Button>
+            )}
+            {onDownload && (
+              <Button variant="outline" size="lg" onClick={onDownload} className="rounded-full">
+                <Download className="size-4" /> 下载
+              </Button>
+            )}
           </div>
         </div>
 
-        {/* 营养信息 */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3 text-gray-900">营养信息</h3>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div className="text-center p-3 bg-orange-50 rounded-lg">
-              <div className="text-xl font-bold text-orange-600">{Math.round(recipe.nutrition.calories)}</div>
-              <div className="text-xs text-gray-600">卡路里</div>
-            </div>
-            <div className="text-center p-3 bg-blue-50 rounded-lg">
-              <div className="text-xl font-bold text-blue-600">{Math.round(recipe.nutrition.protein)}g</div>
-              <div className="text-xs text-gray-600">蛋白质</div>
-            </div>
-            <div className="text-center p-3 bg-green-50 rounded-lg">
-              <div className="text-xl font-bold text-green-600">{Math.round(recipe.nutrition.carbs)}g</div>
-              <div className="text-xs text-gray-600">碳水</div>
-            </div>
-            <div className="text-center p-3 bg-purple-50 rounded-lg">
-              <div className="text-xl font-bold text-purple-600">{Math.round(recipe.nutrition.fat)}g</div>
-              <div className="text-xs text-gray-600">脂肪</div>
-            </div>
-            <div className="text-center p-3 bg-yellow-50 rounded-lg">
-              <div className="text-xl font-bold text-yellow-600">{Math.round(recipe.nutrition.fiber)}g</div>
-              <div className="text-xs text-gray-600">纤维</div>
-            </div>
-          </div>
-          <p className="text-xs text-gray-500 mt-2">
-            * 营养数据为估算值，仅供参考
-          </p>
+        <div className="relative overflow-hidden rounded-l-[48px] rounded-r-[32px] border-l border-white/60 bg-white/60 p-6">
+          <RecipeImagePreview recipe={recipe} preferences={preferences ?? undefined} onOpenSettings={onOpenAPISettings} />
         </div>
-
-        {/* 菜谱配图 */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3 text-gray-900">菜谱配图</h3>
-          <RecipeImagePreview
-            recipe={recipe}
-            preferences={preferences ?? undefined}
-            onOpenSettings={onOpenAPISettings}
-          />
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
+}
+
+function MetricPill({
+  icon: Icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: typeof Clock;
+  label: string;
+  value: string;
+  tone?: string;
+}) {
+  const toneClass =
+    tone === 'hard'
+      ? 'border-red-200 bg-red-50 text-red-700'
+      : tone === 'medium'
+        ? 'border-amber-200 bg-amber-50 text-amber-700'
+        : tone === 'easy'
+          ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+          : 'border-white/60 bg-white/80 text-muted-foreground';
+
+  return (
+    <div className={cn('flex items-center gap-3 rounded-2xl p-4 shadow-soft', toneClass)}>
+      <div className="flex size-10 items-center justify-center rounded-full bg-white text-brand-primary shadow-soft">
+        <Icon className="size-4" />
+      </div>
+      <div>
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="text-sm font-semibold text-current">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+function NutritionStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-white/60 bg-white/80 p-3 text-xs text-muted-foreground shadow-soft">
+      <p className="font-semibold text-foreground">{value}</p>
+      <p className="mt-1 text-[11px] uppercase tracking-wide">{label}</p>
+    </div>
+  );
+}
+
+function CuisineMatchBanner({ match }: { match: Recipe['cuisineMatch'] }) {
+  if (!match) return null;
+
+  const success = match.matched;
+  return (
+    <div
+      className={cn(
+        'flex flex-wrap items-start gap-3 rounded-2xl border px-4 py-3 text-sm',
+        success
+          ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+          : 'border-amber-200 bg-amber-50 text-amber-700'
+      )}
+    >
+      <div className="flex items-center gap-2 font-semibold">
+        {success ? <Sparkles className="size-4" /> : <AlertCircle className="size-4" />}
+        {success ? `已匹配 ${match.cuisine ?? match.requestedCuisines[0]}` : '菜系匹配未完全满足'}
+      </div>
+      <div className="text-xs opacity-80">
+        {success
+          ? match.matchedKeywords?.length
+            ? `关键风味：${match.matchedKeywords.slice(0, 4).join('、')}`
+            : '已满足所选菜系的风味特征'
+          : match.missingKeywords?.length
+            ? `缺少关键词：${match.missingKeywords.slice(0, 4).join('、')}（尝试调整菜系或风味偏好）`
+            : match.reasons?.join('；') ?? '建议重新选择菜系组合'}
+      </div>
+    </div>
+  );
+}
+
+function difficultyLabel(value: Recipe['difficulty']) {
+  switch (value) {
+    case 'easy':
+      return '简单 · 快速上手';
+    case 'medium':
+      return '中等 · 平衡技巧';
+    case 'hard':
+      return '困难 · 高级挑战';
+    default:
+      return '未知难度';
+  }
 }

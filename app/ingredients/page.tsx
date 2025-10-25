@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,8 @@ import { hasAnyAPIKey, getStoredAPIKeys, getPreferredRecipeProvider } from '@/li
 import { filterIngredientsByPreferences, generateFilterExplanation } from '@/lib/ingredient-filter';
 import { Loader2, ChefHat, ArrowLeft, Sparkles, Settings, Camera, CheckCircle, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
+import { StoryflowOverlay } from '@/components/generation/storyflow-overlay';
+import { StepItem } from '@/components/ui/stepper';
 
 type CTAState = 'idle-disabled' | 'idle-ready' | 'loading' | 'success' | 'failure';
 
@@ -35,6 +37,11 @@ export default function IngredientsPage() {
   const [hasAPIKeys, setHasAPIKeys] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [ctaState, setCtaState] = useState<CTAState>('idle-disabled');
+  const [storyflowOpen, setStoryflowOpen] = useState(false);
+  const [storyflowSteps, setStoryflowSteps] = useState<StepItem[]>(() => buildStoryflowSteps(0));
+  const [storyflowAttempt, setStoryflowAttempt] = useState(1);
+  const [storyflowMaxAttempts, setStoryflowMaxAttempts] = useState(3);
+  const [storyflowFailure, setStoryflowFailure] = useState<string | null>(null);
   const router = useRouter();
 
   // 检查API密钥状态
@@ -75,10 +82,17 @@ export default function IngredientsPage() {
     console.log('✅ 开始调用API');
     setCtaState('loading');
     setError(null);
+    setStoryflowOpen(true);
+    setStoryflowFailure(null);
+    setStoryflowSteps(buildStoryflowSteps(0));
+    setStoryflowAttempt(1);
+    setStoryflowMaxAttempts(3);
 
     // 🛡️ 食材预过滤
     const filterResult = filterIngredientsByPreferences(ingredients, preferences);
     let { allowedIngredients, filteredIngredients, filterReasons } = filterResult;
+
+    setStoryflowSteps(buildStoryflowSteps(1));
 
     // 🚨 临时强制海鲜过滤（修复痛风问题）
     const seafoodItems = ['蛤蜊', '青口', '扇贝', '牡蛎', '生蚝', '虾', '蟹', '螃蟹', '龙虾', '鲍鱼', '海参'];
@@ -146,6 +160,8 @@ export default function IngredientsPage() {
         }
       }, 120000); // 2分钟超时
 
+      setStoryflowSteps(buildStoryflowSteps(2));
+
       const response = await fetch('/api/generate-recipe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -183,11 +199,26 @@ export default function IngredientsPage() {
       console.log('API返回数据:', responseBody); // 添加调试日志
 
       if (responseBody.success && responseBody.data && responseBody.data.recipe) {
+        const cuisineMatch = responseBody.data.recipe.cuisineMatch;
+        if (cuisineMatch) {
+          setStoryflowAttempt(cuisineMatch.attempts ?? 1);
+          setStoryflowMaxAttempts(cuisineMatch.maxAttempts ?? 3);
+          if (!cuisineMatch.matched && cuisineMatch.reasons?.length) {
+            setStoryflowFailure(cuisineMatch.reasons.join('；'));
+          }
+        }
+
         // 存储到localStorage
         localStorage.setItem('currentRecipe', JSON.stringify(responseBody.data.recipe));
         localStorage.setItem('recipeIngredients', JSON.stringify(ingredients));
         localStorage.setItem('recipePreferences', JSON.stringify(preferences));
         setCtaState('success');
+
+        setStoryflowSteps(buildStoryflowSteps(4));
+
+        setTimeout(() => {
+          setStoryflowOpen(false);
+        }, 600);
 
         // 跳转到菜谱展示页面
         router.push('/recipe');
@@ -214,6 +245,8 @@ export default function IngredientsPage() {
 
       setError(errorMessage);
       setCtaState('failure');
+      setStoryflowFailure(errorMessage);
+      setStoryflowSteps(buildStoryflowSteps(3));
     } finally {
       // 确保清理定时器
       if (timeoutId) {
@@ -470,7 +503,7 @@ export default function IngredientsPage() {
                   <h3 className="text-xl font-bold">{ctaTitle}</h3>
                   <p className="opacity-90">{ctaSupportingText}</p>
                 </div>
-                
+
                 <Button
                   onClick={() => {
                     console.log('🖱️ 按钮被点击');
@@ -517,6 +550,76 @@ export default function IngredientsPage() {
           setError(null); // 清除错误信息
         }}
       />
+      <StoryflowOverlay
+        open={storyflowOpen}
+        steps={storyflowSteps}
+        attempt={storyflowAttempt}
+        failureReason={storyflowFailure}
+        hint={<StoryflowHint preferences={preferences} ingredients={ingredients} />}
+        maxAttempts={storyflowMaxAttempts}
+      />
     </div>
   );
+}
+
+function buildStoryflowSteps(currentStage: number): StepItem[] {
+  const definitions: Array<{ id: string; title: string; description: string }> = [
+    { id: 'prepare', title: '准备参数', description: '校验食材与偏好设置' },
+    { id: 'generate', title: 'AI 生成菜谱', description: '调用模型创作菜谱' },
+    { id: 'match', title: '菜系匹配', description: '验证风味关键词' },
+    { id: 'finalize', title: '完成并展示', description: '准备跳转到结果页' },
+  ];
+
+  const clampedStage = Math.min(Math.max(currentStage, 0), definitions.length);
+
+  return definitions.map((definition, index) => ({
+    id: definition.id,
+    title: definition.title,
+    description: definition.description,
+    status: index < clampedStage ? 'complete' : index === clampedStage ? 'current' : 'upcoming',
+  }));
+}
+
+function StoryflowHint({
+  preferences,
+  ingredients,
+}: {
+  preferences: UserPreferences;
+  ingredients: string[];
+}) {
+  const kitchenStats = useMemo(() => {
+    const ingredientCount = ingredients.length;
+    const cuisine = preferences.cuisineType[0] ?? '开放';
+    return {
+      ingredientCount,
+      cuisine,
+      difficulty: preferences.difficulty,
+    };
+  }, [preferences, ingredients]);
+
+  return (
+    <div className="space-y-2 text-sm text-muted-foreground">
+      <p>
+        当前已确认 <span className="font-semibold text-brand-primary">{kitchenStats.ingredientCount}</span> 种食材，
+        偏好菜系为 <span className="font-semibold text-brand-primary">{kitchenStats.cuisine}</span>，
+        难度设定为 {friendlyDifficulty(kitchenStats.difficulty)}。
+      </p>
+      <p className="text-xs opacity-80">
+        AI 会自动避开饮食限制与过敏源，若生成时间较长，请耐心等待并保持页面打开。
+      </p>
+    </div>
+  );
+}
+
+function friendlyDifficulty(value: UserPreferences['difficulty']) {
+  switch (value) {
+    case 'easy':
+      return '简单 · 快速上手';
+    case 'medium':
+      return '中等 · 平衡技巧';
+    case 'hard':
+      return '困难 · 高级挑战';
+    default:
+      return '未设定';
+  }
 }

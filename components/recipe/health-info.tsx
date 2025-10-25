@@ -1,168 +1,160 @@
 'use client';
 
+import type { ComponentType } from 'react';
 import { HealthInfo } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Shield, Lightbulb, Target, AlertTriangle } from 'lucide-react';
+import { ShieldPlus, Lightbulb, Target, AlertTriangle, Sparkles } from 'lucide-react';
 
 interface HealthInfoProps {
   healthInfo: HealthInfo;
 }
 
 export function HealthInfoComponent({ healthInfo }: HealthInfoProps) {
-  const {
-    filteredIngredients,
-    filterReasons,
-    healthBenefits,
-    nutritionHighlights,
-    healthTips
-  } = healthInfo;
+  const { filteredIngredients, filterReasons, healthBenefits, nutritionHighlights, healthTips } = healthInfo;
 
-  return (
-    <div className="space-y-4">
-      {/* 健康关怀标题 */}
-      <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-blue-800">
-            <Heart className="size-5 text-red-500" />
-            💙 为您的健康精心定制
-          </CardTitle>
-          <CardDescription className="text-blue-600">
-            我们根据您的健康状况，为您量身打造了这道营养菜谱
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
-      {/* 过滤说明 */}
-      {filteredIngredients.length > 0 && (
-        <Card className="border-orange-200">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-orange-800">
-              <Shield className="size-5" />
-              🛡️ 健康保护
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div>
-              <p className="text-sm font-medium text-orange-700 mb-2">
-                为了您的健康，我们贴心地过滤了以下食材：
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {filteredIngredients.map((ingredient, index) => (
-                  <Badge key={index} variant="destructive" className="text-xs">
-                    {ingredient}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-            {filterReasons.length > 0 && (
-              <div className="mt-3 p-3 bg-orange-50 rounded-lg">
-                <p className="text-sm font-medium text-orange-800 mb-2">过滤原因：</p>
-                <ul className="text-sm text-orange-700 space-y-1">
-                  {filterReasons.map((reason, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <AlertTriangle className="size-4 mt-0.5 flex-shrink-0" />
-                      {reason}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* 健康益处 */}
-      {healthBenefits.length > 0 && (
-        <Card className="border-green-200">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-green-800">
-              <Heart className="size-5" />
-              💚 健康益处
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-green-700 mb-3">
-              这道菜谱对您的健康特别有益：
-            </p>
-            <ul className="space-y-2">
-              {healthBenefits.map((benefit, index) => (
-                <li key={index} className="flex items-start gap-2 text-sm text-green-700">
-                  <span className="text-green-500 mt-1">✓</span>
-                  {benefit}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* 营养重点 */}
-      {nutritionHighlights.length > 0 && (
-        <Card className="border-purple-200">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-purple-800">
-              <Target className="size-5" />
-              🎯 营养重点
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-purple-700 mb-3">
-              根据您的健康状况，特别关注以下营养要素：
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {nutritionHighlights.map((highlight, index) => (
-                <Badge key={index} variant="secondary" className="bg-purple-100 text-purple-800">
-                  {highlight}
+  const cards: HealthInsightCard[] = [
+    {
+      title: '健康保护',
+      icon: ShieldPlus,
+      tone: 'amber',
+      available: filteredIngredients.length > 0 || filterReasons.length > 0,
+      content: filteredIngredients.length ? (
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-medium text-amber-700">为你过滤的食材</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {filteredIngredients.map((ingredient) => (
+                <Badge key={ingredient} variant="destructive" className="rounded-full px-3 py-1 text-xs">
+                  {ingredient}
                 </Badge>
               ))}
             </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* 健康建议 */}
-      {healthTips.length > 0 && (
-        <Card className="border-blue-200">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-blue-800">
-              <Lightbulb className="size-5" />
-              💡 健康建议
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-blue-700 mb-3">
-              为了更好地管理您的健康状况，建议您：
-            </p>
-            <ul className="space-y-2">
-              {healthTips.map((tip, index) => (
-                <li key={index} className="flex items-start gap-2 text-sm text-blue-700">
-                  <Lightbulb className="size-4 mt-0.5 flex-shrink-0 text-blue-500" />
-                  {tip}
+          </div>
+          {filterReasons.length > 0 && (
+            <ul className="space-y-2 rounded-2xl bg-amber-50 p-4 text-xs text-amber-800">
+              {filterReasons.map((reason) => (
+                <li key={reason} className="flex items-start gap-2">
+                  <AlertTriangle className="mt-0.5 size-3.5" />
+                  <span>{reason}</span>
                 </li>
               ))}
             </ul>
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </div>
+      ) : (
+        <EmptyState message="没有需要过滤的食材" tone="amber" />
+      ),
+    },
+    {
+      title: '健康益处',
+      icon: Sparkles,
+      tone: 'emerald',
+      available: healthBenefits.length > 0,
+      content: healthBenefits.length ? (
+        <ul className="space-y-3 text-sm text-emerald-700">
+          {healthBenefits.map((benefit) => (
+            <li key={benefit} className="flex items-start gap-2 rounded-2xl bg-emerald-50 p-3">
+              <span className="mt-1 text-emerald-500">✓</span>
+              {benefit}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <EmptyState message="暂无特别健康益处" tone="emerald" />
+      ),
+    },
+    {
+      title: '营养重点',
+      icon: Target,
+      tone: 'purple',
+      available: nutritionHighlights.length > 0,
+      content: nutritionHighlights.length ? (
+        <div className="flex flex-wrap gap-2">
+          {nutritionHighlights.map((highlight) => (
+            <Badge key={highlight} variant="secondary" className="rounded-full bg-purple-100 px-3 py-1 text-xs text-purple-700">
+              {highlight}
+            </Badge>
+          ))}
+        </div>
+      ) : (
+        <EmptyState message="暂无重点营养提示" tone="purple" />
+      ),
+    },
+    {
+      title: '健康建议',
+      icon: Lightbulb,
+      tone: 'blue',
+      available: healthTips.length > 0,
+      content: healthTips.length ? (
+        <ul className="space-y-3 text-sm text-blue-700">
+          {healthTips.map((tip) => (
+            <li key={tip} className="flex items-start gap-2 rounded-2xl bg-blue-50 p-3">
+              <Lightbulb className="mt-0.5 size-4 text-blue-500" />
+              {tip}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <EmptyState message="暂无额外建议" tone="blue" />
+      ),
+    },
+  ];
 
-      {/* 温馨提醒 */}
-      <Card className="bg-yellow-50 border-yellow-200">
-        <CardContent className="pt-4">
-          <div className="flex items-start gap-2">
-            <Heart className="size-5 text-red-500 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-medium text-yellow-800 mb-1">
-                💛 温馨提醒
-              </p>
-              <p className="text-xs text-yellow-700">
-                以上建议仅供参考，具体的饮食调整请咨询您的主治医生。
-                坚持健康饮食，配合适量运动，定期体检，是管理健康的最佳方式。
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+  return (
+    <div className="space-y-4">
+      {cards.map((card) => (
+        <HealthInsightCard key={card.title} {...card} />
+      ))}
     </div>
   );
+}
+
+interface HealthInsightCard {
+  title: string;
+  icon: ComponentType<{ className?: string }>;
+  tone: 'emerald' | 'amber' | 'purple' | 'blue';
+  content: React.ReactNode;
+  available?: boolean;
+}
+
+function HealthInsightCard({ title, icon: Icon, tone, content }: HealthInsightCard) {
+  return (
+    <article
+      className={
+        tone === 'amber'
+          ? 'rounded-3xl border border-amber-200 bg-amber-50/40 p-6 shadow-soft'
+          : tone === 'emerald'
+            ? 'rounded-3xl border border-emerald-200 bg-emerald-50/40 p-6 shadow-soft'
+            : tone === 'purple'
+              ? 'rounded-3xl border border-purple-200 bg-purple-50/40 p-6 shadow-soft'
+              : 'rounded-3xl border border-blue-200 bg-blue-50/40 p-6 shadow-soft'
+      }
+    >
+      <header className="mb-3 flex items-center gap-2">
+        <div className="flex size-9 items-center justify-center rounded-full bg-white shadow-soft">
+          <Icon className="size-4 text-muted-foreground" />
+        </div>
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+      </header>
+      <div className="text-sm text-muted-foreground">{content}</div>
+    </article>
+  );
+}
+
+interface EmptyStateProps {
+  message: string;
+  tone: 'amber' | 'emerald' | 'purple' | 'blue';
+}
+
+function EmptyState({ message, tone }: EmptyStateProps) {
+  const textColor =
+    tone === 'amber'
+      ? 'text-amber-600'
+      : tone === 'emerald'
+        ? 'text-emerald-600'
+        : tone === 'purple'
+          ? 'text-purple-600'
+          : 'text-blue-600';
+
+  return <p className={`rounded-2xl bg-white/60 p-3 text-xs ${textColor}`}>{message}</p>;
 }
