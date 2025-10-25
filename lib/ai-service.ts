@@ -1,4 +1,4 @@
-import { Recipe, RecipeStep, StepSkillLevel, UserPreferences, NutritionInfo, FrontendApiKeys, COMMON_HEALTH_CONDITIONS } from './types';
+import { Recipe, RecipeStep, StepSkillLevel, UserPreferences, NutritionInfo, FrontendApiKeys, COMMON_HEALTH_CONDITIONS, CuisineMatchInfo } from './types';
 import { extractJSON, safeJSONParse, generateId } from './utils';
 import {
   callRecipeAI,
@@ -7,6 +7,7 @@ import {
   RECIPE_PROMPT_TEMPLATE,
   NUTRITION_PROMPT_TEMPLATE
 } from './ai-providers';
+import { buildCuisineGuidance, evaluateCuisineMatch } from './cuisine-profiles';
 
 /**
  * 构建完整的偏好描述文本
@@ -24,6 +25,8 @@ const DIFFICULTY_SKILL_LEVEL: Record<'easy' | 'medium' | 'hard', StepSkillLevel>
 };
 
 const STEP_SKILL_LEVEL_VALUES: StepSkillLevel[] = ['basic', 'intermediate', 'advanced'];
+
+const MAX_CUISINE_ATTEMPTS = 3;
 
 interface RawIngredient {
   name?: string;
@@ -57,6 +60,69 @@ type RawNutritionData = Partial<NutritionInfo>;
 
 interface AlternativeResponse {
   alternatives?: string[];
+}
+
+function buildRecipeObject(recipeData: RawRecipeData, preferences: UserPreferences): Recipe {
+  const normalizedSteps = normalizeRecipeSteps(recipeData.steps, preferences.difficulty);
+  if (normalizedSteps.length === 0) {
+    throw new Error('菜谱步骤生成失败，未获得有效的步骤列表');
+  }
+
+  return {
+    id: generateId(),
+    title: recipeData.title ?? '',
+    description: recipeData.description || '',
+    ingredients: Array.isArray(recipeData.ingredients)
+      ? recipeData.ingredients.map((ing) => ({
+          name: ing?.name ?? '',
+          quantity: ing?.quantity ?? '',
+          unit: ing?.unit ?? '',
+        }))
+      : [],
+    steps: normalizedSteps,
+    cookingTime: typeof recipeData.cookingTime === 'number'
+      ? recipeData.cookingTime
+      : preferences.cookingTime,
+    servings: typeof recipeData.servings === 'number'
+      ? recipeData.servings
+      : preferences.servings,
+    difficulty: recipeData.difficulty && ['easy', 'medium', 'hard'].includes(recipeData.difficulty as string)
+      ? recipeData.difficulty as Recipe['difficulty']
+      : preferences.difficulty,
+    nutrition: recipeData.nutrition ? {
+      calories: recipeData.nutrition.calories ?? 0,
+      protein: recipeData.nutrition.protein ?? 0,
+      carbs: recipeData.nutrition.carbs ?? 0,
+      fat: recipeData.nutrition.fat ?? 0,
+      fiber: recipeData.nutrition.fiber ?? 0,
+    } : {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+    },
+    tags: Array.isArray(recipeData.tags)
+      ? recipeData.tags.filter((tag): tag is string => typeof tag === 'string')
+      : [],
+    tips: Array.isArray(recipeData.tips)
+      ? recipeData.tips.filter((tip): tip is string => typeof tip === 'string')
+      : [],
+    healthInfo: recipeData.healthInfo ? {
+      filteredIngredients: Array.isArray(recipeData.healthInfo.filteredIngredients)
+        ? recipeData.healthInfo.filteredIngredients.filter((item): item is string => typeof item === 'string') : [],
+      filterReasons: Array.isArray(recipeData.healthInfo.filterReasons)
+        ? recipeData.healthInfo.filterReasons.filter((item): item is string => typeof item === 'string') : [],
+      healthBenefits: Array.isArray(recipeData.healthInfo.healthBenefits)
+        ? recipeData.healthInfo.healthBenefits.filter((item): item is string => typeof item === 'string') : [],
+      nutritionHighlights: Array.isArray(recipeData.healthInfo.nutritionHighlights)
+        ? recipeData.healthInfo.nutritionHighlights.filter((item): item is string => typeof item === 'string') : [],
+      healthTips: Array.isArray(recipeData.healthInfo.healthTips)
+        ? recipeData.healthInfo.healthTips.filter((item): item is string => typeof item === 'string') : [],
+    } : undefined,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
 }
 
 function buildDifficultyGuidance(difficulty: 'easy' | 'medium' | 'hard'): string {
@@ -228,109 +294,105 @@ export async function generateRecipe(
   preferredProvider?: string
 ): Promise<Recipe> {
   try {
-    // 构建完整的偏好描述
     const preferencesText = buildPreferencesText(preferences);
-
-    // 构建提示词
-    const prompt = RECIPE_PROMPT_TEMPLATE
-      .replace('{ingredients}', ingredients.join(', '))
-      .replace('{preferences}', preferencesText)
-      .replace('{timeLimit}', preferences.cookingTime.toString())
-      .replace('{servings}', preferences.servings.toString())
-      .replace('{difficulty}', preferences.difficulty);
+    const desiredCuisines = preferences.cuisineType || [];
+    const cuisineGuidance = buildCuisineGuidance(desiredCuisines);
+    const maxAttempts = desiredCuisines.length > 0 ? MAX_CUISINE_ATTEMPTS : 1;
 
     console.log('🔍 传递给AI的偏好信息:', preferencesText);
-    console.log('正在调用菜谱生成专用AI...');
-
-    // 调用菜谱生成专用AI API，传递前端API密钥和首选模型
-    const responseText = await callRecipeAI(prompt, frontendApiKeys, preferredProvider);
-    
-    // 提取JSON部分
-    const jsonText = extractJSON(responseText);
-    if (!jsonText) {
-      throw new Error('无法从响应中提取有效的JSON');
+    if (desiredCuisines.length > 0) {
+      console.log('🍽️ 目标菜系偏好:', desiredCuisines);
     }
 
-    // 解析JSON
-    const recipeData = safeJSONParse(jsonText, null) as RawRecipeData | null;
-    if (!recipeData) {
-      throw new Error('无法解析菜谱JSON数据');
+    let attempt = 0;
+    let finalRecipe: Recipe | null = null;
+    let lastMatch: ReturnType<typeof evaluateCuisineMatch> | null = null;
+    let lastFailure: string | null = null;
+
+    while (attempt < maxAttempts) {
+      attempt += 1;
+      const retryNote = attempt > 1 && lastMatch
+        ? `\n⚠️ 上一次输出未能体现 ${lastMatch.cuisine ?? desiredCuisines[0]} 菜系特征，缺少关键词：${lastMatch.missingKeywords.slice(0, 4).join('、') || '核心调味' }。本次务必强化对应调味与烹饪方式，并在标签中明确标注菜系。`
+        : '';
+
+      const prompt = RECIPE_PROMPT_TEMPLATE
+        .replace('{ingredients}', ingredients.join(', '))
+        .replace('{preferences}', preferencesText)
+        .replace('{timeLimit}', preferences.cookingTime.toString())
+        .replace('{servings}', preferences.servings.toString())
+        .replace('{difficulty}', preferences.difficulty)
+        .replace('{cuisineGuidance}', `${cuisineGuidance}${retryNote}`);
+
+      console.log(`正在调用菜谱生成专用AI（第 ${attempt}/${maxAttempts} 次尝试）...`);
+
+      const responseText = await callRecipeAI(prompt, frontendApiKeys, preferredProvider);
+      const jsonText = extractJSON(responseText);
+      if (!jsonText) {
+        throw new Error('无法从响应中提取有效的JSON');
+      }
+
+      const recipeData = safeJSONParse(jsonText, null) as RawRecipeData | null;
+      if (!recipeData) {
+        throw new Error('无法解析菜谱JSON数据');
+      }
+
+      if (!recipeData.title || !recipeData.ingredients || !recipeData.steps) {
+        throw new Error('菜谱数据不完整，缺少必需字段');
+      }
+
+      const candidateRecipe = buildRecipeObject(recipeData, preferences);
+      let cuisineMatchInfo: CuisineMatchInfo = {
+        requestedCuisines: desiredCuisines,
+        matched: true,
+        cuisine: desiredCuisines[0] ?? null,
+        confidence: 1,
+        attempts: attempt,
+        maxAttempts,
+        matchedKeywords: [],
+        missingKeywords: [],
+        reasons: ['未指定菜系或无需校验'],
+      };
+
+      if (desiredCuisines.length > 0) {
+        const matchResult = evaluateCuisineMatch(candidateRecipe, desiredCuisines);
+        cuisineMatchInfo = {
+          requestedCuisines: desiredCuisines,
+          matched: matchResult.matched,
+          cuisine: matchResult.cuisine,
+          confidence: matchResult.confidence,
+          attempts: attempt,
+          maxAttempts,
+          matchedKeywords: matchResult.matchedKeywords,
+          missingKeywords: matchResult.missingKeywords,
+          reasons: matchResult.reasons,
+        };
+        lastMatch = matchResult;
+
+        if (!matchResult.matched) {
+          lastFailure = matchResult.reasons.join('；');
+          console.warn('⚠️ 菜系匹配失败:', matchResult);
+        }
+      }
+
+      candidateRecipe.cuisineMatch = cuisineMatchInfo;
+
+      const minStepsRequired = MIN_STEPS_BY_DIFFICULTY[candidateRecipe.difficulty];
+      if (candidateRecipe.steps.length < minStepsRequired) {
+        console.warn(`生成的菜谱步骤少于预期（${candidateRecipe.steps.length}/${minStepsRequired}）`);
+      }
+
+      if (cuisineMatchInfo.matched || desiredCuisines.length === 0 || attempt >= maxAttempts) {
+        finalRecipe = candidateRecipe;
+        break;
+      }
     }
 
-    // 验证必需字段
-    if (!recipeData.title || !recipeData.ingredients || !recipeData.steps) {
-      throw new Error('菜谱数据不完整，缺少必需字段');
+    if (!finalRecipe) {
+      throw new Error(lastFailure || '菜谱生成失败：菜系匹配未成功');
     }
 
-    // 构建完整的菜谱对象
-    const normalizedSteps = normalizeRecipeSteps(recipeData.steps, preferences.difficulty);
-    if (normalizedSteps.length === 0) {
-      throw new Error('菜谱步骤生成失败，未获得有效的步骤列表');
-    }
-
-    const recipe: Recipe = {
-      id: generateId(),
-      title: recipeData.title,
-      description: recipeData.description || '',
-      ingredients: Array.isArray(recipeData.ingredients)
-        ? recipeData.ingredients.map((ing) => ({
-            name: ing?.name ?? '',
-            quantity: ing?.quantity ?? '',
-            unit: ing?.unit ?? '',
-          }))
-        : [],
-      steps: normalizedSteps,
-      cookingTime: typeof recipeData.cookingTime === 'number' 
-        ? recipeData.cookingTime 
-        : preferences.cookingTime,
-      servings: typeof recipeData.servings === 'number' 
-        ? recipeData.servings 
-        : preferences.servings,
-      difficulty: recipeData.difficulty && ['easy', 'medium', 'hard'].includes(recipeData.difficulty as string)
-        ? recipeData.difficulty as Recipe['difficulty']
-        : preferences.difficulty,
-      nutrition: recipeData.nutrition ? {
-        calories: recipeData.nutrition.calories ?? 0,
-        protein: recipeData.nutrition.protein ?? 0,
-        carbs: recipeData.nutrition.carbs ?? 0,
-        fat: recipeData.nutrition.fat ?? 0,
-        fiber: recipeData.nutrition.fiber ?? 0,
-      } : {
-        calories: 0,
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-        fiber: 0,
-      },
-      tags: Array.isArray(recipeData.tags)
-        ? recipeData.tags.filter((tag): tag is string => typeof tag === 'string')
-        : [],
-      tips: Array.isArray(recipeData.tips)
-        ? recipeData.tips.filter((tip): tip is string => typeof tip === 'string')
-        : [],
-      healthInfo: recipeData.healthInfo ? {
-        filteredIngredients: Array.isArray(recipeData.healthInfo.filteredIngredients)
-          ? recipeData.healthInfo.filteredIngredients.filter((item): item is string => typeof item === 'string') : [],
-        filterReasons: Array.isArray(recipeData.healthInfo.filterReasons)
-          ? recipeData.healthInfo.filterReasons.filter((item): item is string => typeof item === 'string') : [],
-        healthBenefits: Array.isArray(recipeData.healthInfo.healthBenefits)
-          ? recipeData.healthInfo.healthBenefits.filter((item): item is string => typeof item === 'string') : [],
-        nutritionHighlights: Array.isArray(recipeData.healthInfo.nutritionHighlights)
-          ? recipeData.healthInfo.nutritionHighlights.filter((item): item is string => typeof item === 'string') : [],
-        healthTips: Array.isArray(recipeData.healthInfo.healthTips)
-          ? recipeData.healthInfo.healthTips.filter((item): item is string => typeof item === 'string') : [],
-      } : undefined,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    console.log('菜谱生成成功:', recipe.title);
-    const minStepsRequired = MIN_STEPS_BY_DIFFICULTY[recipe.difficulty];
-    if (recipe.steps.length < minStepsRequired) {
-      console.warn(`生成的菜谱步骤少于预期（${recipe.steps.length}/${minStepsRequired}）`);
-    }
-
-    return recipe;
+    console.log('菜谱生成成功:', finalRecipe.title);
+    return finalRecipe;
 
   } catch (error) {
     console.error('生成菜谱失败:', error);

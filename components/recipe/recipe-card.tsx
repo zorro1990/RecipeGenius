@@ -4,7 +4,8 @@ import { Recipe, UserPreferences } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, Users, ChefHat, Heart, Share2, Download } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Clock, Users, ChefHat, Heart, Share2, Download, Sparkles, AlertCircle } from 'lucide-react';
 import { formatCookingTime, calculateNutritionScore } from '@/lib/utils';
 import { RecipeImagePreview } from './recipe-image-preview';
 
@@ -44,6 +45,10 @@ export function RecipeCard({
       default: return '未知';
     }
   };
+
+  const cuisineMatch = recipe.cuisineMatch;
+  const matchedKeywords = cuisineMatch?.matchedKeywords.slice(0, 4).join('、');
+  const missingKeywords = cuisineMatch?.missingKeywords.slice(0, 4).join('、');
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
@@ -94,6 +99,38 @@ export function RecipeCard({
               </Badge>
             ))}
           </div>
+        )}
+
+        {cuisineMatch && (
+          <Alert variant={cuisineMatch.matched ? 'default' : 'destructive'}>
+            <AlertTitle className="flex items-center gap-2 text-sm">
+              {cuisineMatch.matched ? (
+                <>
+                  <Sparkles className="size-4 text-amber-500" />
+                  菜系匹配成功
+                </>
+              ) : (
+                <>
+                  <AlertCircle className="size-4 text-red-500" />
+                  菜系匹配未完全满足
+                </>
+              )}
+            </AlertTitle>
+            <AlertDescription className="text-xs leading-relaxed text-gray-600">
+              {cuisineMatch.matched ? (
+                <>
+                  已按照 <strong>{cuisineMatch.cuisine ?? cuisineMatch.requestedCuisines[0] ?? '目标菜系'}</strong> 生成。
+                  {matchedKeywords && <> 关键风味词：{matchedKeywords}。</>}
+                </>
+              ) : (
+                <>
+                  尝试 {cuisineMatch.attempts}/{cuisineMatch.maxAttempts} 次后仍未完全贴合 <strong>{cuisineMatch.requestedCuisines.join('、')}</strong>。
+                  {missingKeywords && <> 建议补充：{missingKeywords}。</>}
+                  {' '}请考虑调整菜系偏好或接受当前推荐。
+                </>
+              )}
+            </AlertDescription>
+          </Alert>
         )}
 
         {/* 操作按钮 */}

@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { Recipe, RecipeStep, StepSkillLevel, UserPreferences, NutritionInfo, COMMON_HEALTH_CONDITIONS } from './types';
+import { buildCuisineGuidance } from './cuisine-profiles';
 import { extractJSON, safeJSONParse, generateId } from './utils';
 import { getSecureEnvVar } from './cloudflare-utils';
 
@@ -155,6 +156,8 @@ export const RECIPE_PROMPT_TEMPLATE = `
 
 食材列表：{ingredients}
 用户偏好和限制：{preferences}
+菜系特征与风味要求：
+{cuisineGuidance}
 烹饪时间限制：{timeLimit}分钟
 用餐人数：{servings}人
 难度要求：{difficulty}
@@ -164,7 +167,7 @@ export const RECIPE_PROMPT_TEMPLATE = `
 2. 【过敏源安全】如果用户标注了过敏源，这些食材及其制品绝对不能出现在菜谱中，这关乎用户生命安全
 3. 【食材冲突处理】如果现有食材与用户的饮食限制或过敏源冲突，必须从食材列表中完全排除这些食材
 4. 【替代方案】当排除冲突食材后，使用剩余的安全食材创建菜谱，或建议安全的替代食材
-5. 【菜系偏好】在满足安全要求的前提下，优先考虑用户的菜系偏好
+5. 【菜系偏好】必须满足上述菜系特征，如无法满足需说明原因并提供最接近的替代方案
 
 ⚠️ 特别注意：
 - 纯素食 = 绝对不能有任何动物性食材（肉、鱼、蛋、奶等）
@@ -342,11 +345,13 @@ export async function generateRecipe(
   try {
     // 构建完整的偏好描述
     const preferencesText = buildPreferencesText(preferences);
+    const cuisineGuidance = buildCuisineGuidance(preferences.cuisineType || []);
 
     // 构建提示词
     const prompt = RECIPE_PROMPT_TEMPLATE
       .replace('{ingredients}', ingredients.join(', '))
       .replace('{preferences}', preferencesText)
+      .replace('{cuisineGuidance}', cuisineGuidance)
       .replace('{timeLimit}', preferences.cookingTime.toString())
       .replace('{servings}', preferences.servings.toString())
       .replace('{difficulty}', preferences.difficulty);

@@ -15,6 +15,18 @@ export interface NutritionInfo {
   fiber: number;
 }
 
+export interface CuisineMatchInfo {
+  requestedCuisines: string[];
+  matched: boolean;
+  cuisine?: string | null;
+  confidence: number;
+  attempts: number;
+  maxAttempts: number;
+  matchedKeywords: string[];
+  missingKeywords: string[];
+  reasons: string[];
+}
+
 // 健康信息接口
 export interface HealthInfo {
   filteredIngredients: string[]; // 被过滤的食材
@@ -51,6 +63,7 @@ export interface Recipe {
   tags: string[];
   tips?: string[];
   healthInfo?: HealthInfo; // 健康信息
+  cuisineMatch?: CuisineMatchInfo;
   createdAt?: string;
   updatedAt?: string;
 }
