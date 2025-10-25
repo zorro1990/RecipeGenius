@@ -4003,107 +4003,112 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/page_client-reference-manifest.js": {
-      "bytes": 8002,
+      "bytes": 8499,
       "imports": [],
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/recipe/page_client-reference-manifest.js": {
-      "bytes": 8284,
+      "bytes": 8843,
       "imports": [],
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/ingredients/page_client-reference-manifest.js": {
-      "bytes": 8391,
+      "bytes": 8904,
       "imports": [],
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/debug/page_client-reference-manifest.js": {
-      "bytes": 8191,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/app/examples/page_client-reference-manifest.js": {
-      "bytes": 8243,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/app/_not-found/page_client-reference-manifest.js": {
-      "bytes": 8099,
+      "bytes": 8704,
       "imports": [],
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api-status/page_client-reference-manifest.js": {
-      "bytes": 8296,
+      "bytes": 8809,
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/examples/[id]/page_client-reference-manifest.js": {
-      "bytes": 8495,
+    ".open-next/server-functions/default/.next/server/app/_not-found/page_client-reference-manifest.js": {
+      "bytes": 8612,
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/test-gemini/route_client-reference-manifest.js": {
-      "bytes": 8111,
+    ".open-next/server-functions/default/.next/server/app/examples/page_client-reference-manifest.js": {
+      "bytes": 8756,
       "imports": [],
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/test-api-key/route_client-reference-manifest.js": {
-      "bytes": 8113,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/app/api/test-doubao/route_client-reference-manifest.js": {
-      "bytes": 8111,
+      "bytes": 8626,
       "imports": [],
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/test-ai/route_client-reference-manifest.js": {
-      "bytes": 8164,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/app/api/upload-image/route_client-reference-manifest.js": {
-      "bytes": 8113,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/app/api/mock-recipe/route_client-reference-manifest.js": {
-      "bytes": 8111,
+      "bytes": 8677,
       "imports": [],
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/simple-test/route_client-reference-manifest.js": {
-      "bytes": 8111,
+      "bytes": 8624,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/api/test-doubao/route_client-reference-manifest.js": {
+      "bytes": 8624,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/api/test-gemini/route_client-reference-manifest.js": {
+      "bytes": 8624,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/api/upload-image/route_client-reference-manifest.js": {
+      "bytes": 8626,
       "imports": [],
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/recognize-ingredients/route_client-reference-manifest.js": {
-      "bytes": 8208,
+      "bytes": 8721,
       "imports": [],
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/generate-recipe/route_client-reference-manifest.js": {
-      "bytes": 8190,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/app/api/health/route_client-reference-manifest.js": {
-      "bytes": 8163,
+      "bytes": 8703,
       "imports": [],
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/frontend-api-status/route_client-reference-manifest.js": {
-      "bytes": 8127,
+      "bytes": 8640,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/api/health/route_client-reference-manifest.js": {
+      "bytes": 8676,
       "imports": [],
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/analyze-nutrition/route_client-reference-manifest.js": {
-      "bytes": 8195,
+      "bytes": 8708,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/api/mock-recipe/route_client-reference-manifest.js": {
+      "bytes": 8624,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/api/generate-recipe-image/route_client-reference-manifest.js": {
+      "bytes": 8644,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/examples/[id]/page_client-reference-manifest.js": {
+      "bytes": 9024,
       "imports": [],
       "format": "cjs"
     },
     ".open-next/server-functions/default/node_modules/next/dist/server/load-manifest.js": {
-      "bytes": 29980,
+      "bytes": 31292,
       "imports": [
         {
           "path": "fs",
@@ -4123,251 +4128,107 @@
         {
           "path": ".open-next/server-functions/default/.next/server/app/page_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/page_client-reference-manifest.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/page_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/recipe/page_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/recipe/page_client-reference-manifest.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/recipe/page_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/ingredients/page_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/ingredients/page_client-reference-manifest.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/ingredients/page_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/debug/page_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/debug/page_client-reference-manifest.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/app/examples/page_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/examples/page_client-reference-manifest.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/app/_not-found/page_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/_not-found/page_client-reference-manifest.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/debug/page_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api-status/page_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api-status/page_client-reference-manifest.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api-status/page_client-reference-manifest.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/examples/[id]/page_client-reference-manifest.js",
+          "path": ".open-next/server-functions/default/.next/server/app/_not-found/page_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/examples/[id]/page_client-reference-manifest.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/_not-found/page_client-reference-manifest.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/test-gemini/route_client-reference-manifest.js",
+          "path": ".open-next/server-functions/default/.next/server/app/examples/page_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/test-gemini/route_client-reference-manifest.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/examples/page_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/test-api-key/route_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/test-api-key/route_client-reference-manifest.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/app/api/test-doubao/route_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/test-doubao/route_client-reference-manifest.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/test-api-key/route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/test-ai/route_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/test-ai/route_client-reference-manifest.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/app/api/upload-image/route_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/upload-image/route_client-reference-manifest.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/app/api/mock-recipe/route_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/mock-recipe/route_client-reference-manifest.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/test-ai/route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/simple-test/route_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/simple-test/route_client-reference-manifest.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/simple-test/route_client-reference-manifest.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/test-doubao/route_client-reference-manifest.js",
+          "kind": "require-call",
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/test-doubao/route_client-reference-manifest.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/test-gemini/route_client-reference-manifest.js",
+          "kind": "require-call",
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/test-gemini/route_client-reference-manifest.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/upload-image/route_client-reference-manifest.js",
+          "kind": "require-call",
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/upload-image/route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/recognize-ingredients/route_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/recognize-ingredients/route_client-reference-manifest.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/recognize-ingredients/route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/generate-recipe/route_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/generate-recipe/route_client-reference-manifest.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/app/api/health/route_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/health/route_client-reference-manifest.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/generate-recipe/route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/frontend-api-status/route_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/frontend-api-status/route_client-reference-manifest.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/frontend-api-status/route_client-reference-manifest.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/health/route_client-reference-manifest.js",
+          "kind": "require-call",
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/health/route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/analyze-nutrition/route_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/analyze-nutrition/route_client-reference-manifest.js"
-        }
-      ],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/node_modules/react/cjs/react-jsx-runtime.production.js": {
-      "bytes": 976,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/node_modules/react/jsx-runtime.js": {
-      "bytes": 202,
-      "imports": [
-        {
-          "path": ".open-next/server-functions/default/node_modules/react/cjs/react-jsx-runtime.production.js",
-          "kind": "require-call",
-          "original": "./cjs/react-jsx-runtime.production.js"
-        }
-      ],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/chunks/117.js": {
-      "bytes": 25558,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/chunks/408.js": {
-      "bytes": 13549,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/chunks/409.js": {
-      "bytes": 29416,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/chunks/447.js": {
-      "bytes": 106304,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/chunks/449.js": {
-      "bytes": 18950,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/chunks/548.js": {
-      "bytes": 68755,
-      "imports": [
-        {
-          "path": "@builder.io/partytown/integration",
-          "kind": "require-call",
-          "external": true
-        }
-      ],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/chunks/580.js": {
-      "bytes": 26706,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/chunks/627.js": {
-      "bytes": 69740,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/chunks/767.js": {
-      "bytes": 57664,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/chunks/985.js": {
-      "bytes": 176994,
-      "imports": [],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/webpack-runtime.js": {
-      "bytes": 2103,
-      "imports": [
-        {
-          "path": ".open-next/server-functions/default/.next/server/chunks/117.js",
-          "kind": "require-call",
-          "original": "./chunks/117.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/analyze-nutrition/route_client-reference-manifest.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/408.js",
+          "path": ".open-next/server-functions/default/.next/server/app/api/mock-recipe/route_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "./chunks/408.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/mock-recipe/route_client-reference-manifest.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/409.js",
+          "path": ".open-next/server-functions/default/.next/server/app/api/generate-recipe-image/route_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "./chunks/409.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/generate-recipe-image/route_client-reference-manifest.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/447.js",
+          "path": ".open-next/server-functions/default/.next/server/app/examples/[id]/page_client-reference-manifest.js",
           "kind": "require-call",
-          "original": "./chunks/447.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/chunks/449.js",
-          "kind": "require-call",
-          "original": "./chunks/449.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/chunks/548.js",
-          "kind": "require-call",
-          "original": "./chunks/548.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/chunks/580.js",
-          "kind": "require-call",
-          "original": "./chunks/580.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/chunks/627.js",
-          "kind": "require-call",
-          "original": "./chunks/627.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/chunks/767.js",
-          "kind": "require-call",
-          "original": "./chunks/767.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/chunks/985.js",
-          "kind": "require-call",
-          "original": "./chunks/985.js"
-        }
-      ],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/pages/_app.js": {
-      "bytes": 3357,
-      "imports": [
-        {
-          "path": ".open-next/server-functions/default/node_modules/react/index.js",
-          "kind": "require-call",
-          "original": "react"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/react/jsx-runtime.js",
-          "kind": "require-call",
-          "original": "react/jsx-runtime"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
-          "kind": "require-call",
-          "original": "../webpack-runtime.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/examples/[id]/page_client-reference-manifest.js"
         }
       ],
       "format": "cjs"
@@ -4483,6 +4344,22 @@
       ],
       "format": "cjs"
     },
+    ".open-next/server-functions/default/node_modules/react/cjs/react-jsx-runtime.production.js": {
+      "bytes": 976,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/node_modules/react/jsx-runtime.js": {
+      "bytes": 202,
+      "imports": [
+        {
+          "path": ".open-next/server-functions/default/node_modules/react/cjs/react-jsx-runtime.production.js",
+          "kind": "require-call",
+          "original": "./cjs/react-jsx-runtime.production.js"
+        }
+      ],
+      "format": "cjs"
+    },
     ".open-next/server-functions/default/node_modules/client-only/index.js": {
       "bytes": 0,
       "imports": []
@@ -4575,6 +4452,128 @@
       ],
       "format": "cjs"
     },
+    ".open-next/server-functions/default/.next/server/chunks/185.js": {
+      "bytes": 30911,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/chunks/225.js": {
+      "bytes": 29438,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/chunks/447.js": {
+      "bytes": 106304,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/chunks/449.js": {
+      "bytes": 18950,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/chunks/548.js": {
+      "bytes": 68755,
+      "imports": [
+        {
+          "path": "@builder.io/partytown/integration",
+          "kind": "require-call",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/chunks/580.js": {
+      "bytes": 26706,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/chunks/627.js": {
+      "bytes": 69740,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/chunks/767.js": {
+      "bytes": 57664,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/chunks/792.js": {
+      "bytes": 33256,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/chunks/886.js": {
+      "bytes": 13516,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/chunks/985.js": {
+      "bytes": 177122,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/webpack-runtime.js": {
+      "bytes": 2158,
+      "imports": [
+        {
+          "path": ".open-next/server-functions/default/.next/server/chunks/185.js",
+          "kind": "require-call",
+          "original": "./chunks/185.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/chunks/225.js",
+          "kind": "require-call",
+          "original": "./chunks/225.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/chunks/447.js",
+          "kind": "require-call",
+          "original": "./chunks/447.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/chunks/449.js",
+          "kind": "require-call",
+          "original": "./chunks/449.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/chunks/548.js",
+          "kind": "require-call",
+          "original": "./chunks/548.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/chunks/580.js",
+          "kind": "require-call",
+          "original": "./chunks/580.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/chunks/627.js",
+          "kind": "require-call",
+          "original": "./chunks/627.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/chunks/767.js",
+          "kind": "require-call",
+          "original": "./chunks/767.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/chunks/792.js",
+          "kind": "require-call",
+          "original": "./chunks/792.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/chunks/886.js",
+          "kind": "require-call",
+          "original": "./chunks/886.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/chunks/985.js",
+          "kind": "require-call",
+          "original": "./chunks/985.js"
+        }
+      ],
+      "format": "cjs"
+    },
     ".open-next/server-functions/default/.next/server/pages/_error.js": {
       "bytes": 9461,
       "imports": [
@@ -4592,6 +4591,27 @@
           "path": "path",
           "kind": "require-call",
           "external": true
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/react/jsx-runtime.js",
+          "kind": "require-call",
+          "original": "react/jsx-runtime"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
+          "kind": "require-call",
+          "original": "../webpack-runtime.js"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/pages/_app.js": {
+      "bytes": 3357,
+      "imports": [
+        {
+          "path": ".open-next/server-functions/default/node_modules/react/index.js",
+          "kind": "require-call",
+          "original": "react"
         },
         {
           "path": ".open-next/server-functions/default/node_modules/react/jsx-runtime.js",
@@ -4758,7 +4778,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/_not-found/page.js": {
-      "bytes": 3772,
+      "bytes": 3805,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -4835,43 +4855,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/analyze-nutrition/route.js": {
-      "bytes": 6647,
-      "imports": [
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
-          "kind": "require-call",
-          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js",
-          "kind": "require-call",
-          "original": "next/dist/compiled/next-server/app-route.runtime.prod.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
-          "kind": "require-call",
-          "original": "../../../webpack-runtime.js"
-        }
-      ],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/app/api/generate-recipe/route.js": {
-      "bytes": 6544,
+      "bytes": 3188,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -4907,7 +4891,43 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/frontend-api-status/route.js": {
-      "bytes": 4481,
+      "bytes": 4513,
+      "imports": [
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-route.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
+          "kind": "require-call",
+          "original": "../../../webpack-runtime.js"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/api/generate-recipe/route.js": {
+      "bytes": 3125,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -4943,43 +4963,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/mock-recipe/route.js": {
-      "bytes": 3069,
-      "imports": [
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
-          "kind": "require-call",
-          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js",
-          "kind": "require-call",
-          "original": "next/dist/compiled/next-server/app-route.runtime.prod.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
-          "kind": "require-call",
-          "original": "../../../webpack-runtime.js"
-        }
-      ],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/app/api/simple-test/route.js": {
-      "bytes": 2622,
+      "bytes": 3466,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -5015,43 +4999,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/test-ai/route.js": {
-      "bytes": 7177,
-      "imports": [
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
-          "kind": "require-call",
-          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js",
-          "kind": "require-call",
-          "original": "next/dist/compiled/next-server/app-route.runtime.prod.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
-          "kind": "require-call",
-          "original": "../../../webpack-runtime.js"
-        }
-      ],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/app/api/test-doubao/route.js": {
-      "bytes": 2536,
+      "bytes": 3646,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -5087,7 +5035,79 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/test-api-key/route.js": {
-      "bytes": 5051,
+      "bytes": 5957,
+      "imports": [
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-route.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
+          "kind": "require-call",
+          "original": "../../../webpack-runtime.js"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/api/test-doubao/route.js": {
+      "bytes": 2552,
+      "imports": [
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-route.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
+          "kind": "require-call",
+          "original": "../../../webpack-runtime.js"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/api/simple-test/route.js": {
+      "bytes": 2669,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -5123,7 +5143,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/test-gemini/route.js": {
-      "bytes": 3399,
+      "bytes": 3439,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -5159,7 +5179,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/favicon.ico/route.js": {
-      "bytes": 36185,
+      "bytes": 36261,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -5194,44 +5214,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/recognize-ingredients/route.js": {
-      "bytes": 4107,
-      "imports": [
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
-          "kind": "require-call",
-          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js",
-          "kind": "require-call",
-          "original": "next/dist/compiled/next-server/app-route.runtime.prod.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
-          "kind": "require-call",
-          "original": "../../../webpack-runtime.js"
-        }
-      ],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/app/api/upload-image/route.js": {
-      "bytes": 6898,
+    ".open-next/server-functions/default/.next/server/app/api/generate-recipe-image/route.js": {
+      "bytes": 10950,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -5267,7 +5251,79 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/health/route.js": {
-      "bytes": 6649,
+      "bytes": 6632,
+      "imports": [
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-route.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
+          "kind": "require-call",
+          "original": "../../../webpack-runtime.js"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/api/recognize-ingredients/route.js": {
+      "bytes": 4125,
+      "imports": [
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-route.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
+          "kind": "require-call",
+          "original": "../../../webpack-runtime.js"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/api/upload-image/route.js": {
+      "bytes": 7090,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -5303,7 +5359,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api-status/page.js": {
-      "bytes": 17019,
+      "bytes": 20127,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -5349,7 +5405,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/debug/page.js": {
-      "bytes": 13448,
+      "bytes": 14178,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -5395,7 +5451,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/examples/[id]/page.js": {
-      "bytes": 33003,
+      "bytes": 34458,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -5440,100 +5496,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/ingredients/page.js": {
-      "bytes": 60562,
-      "imports": [
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
-          "kind": "require-call",
-          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
-        },
-        {
-          "path": "path",
-          "kind": "require-call",
-          "external": true
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/action-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/action-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-async-storage.external.js"
-        },
-        {
-          "path": "url",
-          "kind": "require-call",
-          "external": true
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
-          "kind": "require-call",
-          "original": "../../webpack-runtime.js"
-        }
-      ],
-      "format": "cjs"
-    },
-    ".open-next/server-functions/default/.next/server/app/examples/page.js": {
-      "bytes": 33742,
-      "imports": [
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
-          "kind": "require-call",
-          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
-        },
-        {
-          "path": "path",
-          "kind": "require-call",
-          "external": true
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/action-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/action-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-async-storage.external.js"
-        },
-        {
-          "path": "url",
-          "kind": "require-call",
-          "external": true
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
-          "kind": "require-call",
-          "original": "../../webpack-runtime.js"
-        }
-      ],
-      "format": "cjs"
-    },
     ".open-next/server-functions/default/.next/server/app/page.js": {
-      "bytes": 8195,
+      "bytes": 11250,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -5578,8 +5542,100 @@
       ],
       "format": "cjs"
     },
+    ".open-next/server-functions/default/.next/server/app/examples/page.js": {
+      "bytes": 34328,
+      "imports": [
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
+        },
+        {
+          "path": "path",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/action-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/action-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-async-storage.external.js"
+        },
+        {
+          "path": "url",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
+          "kind": "require-call",
+          "original": "../../webpack-runtime.js"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/ingredients/page.js": {
+      "bytes": 74975,
+      "imports": [
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
+        },
+        {
+          "path": "path",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/action-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/action-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-async-storage.external.js"
+        },
+        {
+          "path": "url",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
+          "kind": "require-call",
+          "original": "../../webpack-runtime.js"
+        }
+      ],
+      "format": "cjs"
+    },
     ".open-next/server-functions/default/.next/server/app/recipe/page.js": {
-      "bytes": 26138,
+      "bytes": 33320,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
@@ -5625,7 +5681,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/node_modules/next/dist/server/require.js": {
-      "bytes": 19475,
+      "bytes": 20148,
       "imports": [
         {
           "path": "path",
@@ -5673,124 +5729,129 @@
           "external": true
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/pages/_app.js",
-          "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/pages/_app.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/pages/_error.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/pages/_error.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/pages/_error.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/pages/_app.js",
+          "kind": "require-call",
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/pages/_app.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/pages/_document.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/pages/_document.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/pages/_document.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/_not-found/page.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/_not-found/page.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/_not-found/page.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/analyze-nutrition/route.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/analyze-nutrition/route.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/app/api/generate-recipe/route.js",
-          "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/generate-recipe/route.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/analyze-nutrition/route.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/frontend-api-status/route.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/frontend-api-status/route.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/frontend-api-status/route.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/generate-recipe/route.js",
+          "kind": "require-call",
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/generate-recipe/route.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/mock-recipe/route.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/mock-recipe/route.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/app/api/simple-test/route.js",
-          "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/simple-test/route.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/mock-recipe/route.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/test-ai/route.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/test-ai/route.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/app/api/test-doubao/route.js",
-          "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/test-doubao/route.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/test-ai/route.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/test-api-key/route.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/test-api-key/route.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/test-api-key/route.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/test-doubao/route.js",
+          "kind": "require-call",
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/test-doubao/route.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/simple-test/route.js",
+          "kind": "require-call",
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/simple-test/route.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/test-gemini/route.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/test-gemini/route.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/test-gemini/route.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/favicon.ico/route.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/favicon.ico/route.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/favicon.ico/route.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/recognize-ingredients/route.js",
+          "path": ".open-next/server-functions/default/.next/server/app/api/generate-recipe-image/route.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/recognize-ingredients/route.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/app/api/upload-image/route.js",
-          "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/upload-image/route.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/generate-recipe-image/route.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/health/route.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api/health/route.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/health/route.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/recognize-ingredients/route.js",
+          "kind": "require-call",
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/recognize-ingredients/route.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/upload-image/route.js",
+          "kind": "require-call",
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api/upload-image/route.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api-status/page.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/api-status/page.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/api-status/page.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/debug/page.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/debug/page.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/debug/page.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/examples/[id]/page.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/examples/[id]/page.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/app/ingredients/page.js",
-          "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/ingredients/page.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/app/examples/page.js",
-          "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/examples/page.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/examples/[id]/page.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/page.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/page.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/page.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/examples/page.js",
+          "kind": "require-call",
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/examples/page.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/ingredients/page.js",
+          "kind": "require-call",
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/ingredients/page.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/recipe/page.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/app/recipe/page.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/app/recipe/page.js"
         }
       ],
       "format": "cjs"
@@ -6113,22 +6174,22 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/node_modules/next/dist/server/lib/module-loader/node-module-loader.js": {
-      "bytes": 968,
+      "bytes": 1016,
       "imports": [
-        {
-          "path": ".open-next/server-functions/default/.next/server/pages/_app.js",
-          "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/pages/_app.js"
-        },
         {
           "path": ".open-next/server-functions/default/.next/server/pages/_error.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/pages/_error.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/pages/_error.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/pages/_app.js",
+          "kind": "require-call",
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/pages/_app.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/pages/_document.js",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/.next/server/pages/_document.js"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/.next/server/pages/_document.js"
         }
       ],
       "format": "cjs"
@@ -7333,7 +7394,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/node_modules/next/dist/server/next-server.js": {
-      "bytes": 52660,
+      "bytes": 52692,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/server/node-environment.js",
@@ -7638,12 +7699,12 @@
         {
           "path": ".open-next/server-functions/default/composable-cache.cjs",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/composable-cache.cjs"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/composable-cache.cjs"
         },
         {
           "path": ".open-next/server-functions/default/cache.cjs",
           "kind": "require-call",
-          "original": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius/.open-next/server-functions/default/cache.cjs"
+          "original": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius/.open-next/server-functions/default/cache.cjs"
         },
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/experimental/testmode/server.js",
@@ -7679,7 +7740,7 @@
       "format": "esm"
     },
     ".open-next/server-functions/default/index.mjs": {
-      "bytes": 73669,
+      "bytes": 73827,
       "imports": [
         {
           "path": "node:module",
@@ -8064,17 +8125,17 @@
           "external": true
         },
         {
-          "path": "@builder.io/partytown/integration",
-          "kind": "require-call",
-          "external": true
-        },
-        {
           "path": "crypto",
           "kind": "require-call",
           "external": true
         },
         {
           "path": "path",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "@builder.io/partytown/integration",
           "kind": "require-call",
           "external": true
         },
@@ -9242,109 +9303,70 @@
           "bytesInOutput": 590
         },
         ".open-next/server-functions/default/.next/server/app/page_client-reference-manifest.js": {
-          "bytesInOutput": 7333
+          "bytesInOutput": 8760
         },
         ".open-next/server-functions/default/.next/server/app/recipe/page_client-reference-manifest.js": {
-          "bytesInOutput": 7623
+          "bytesInOutput": 9142
         },
         ".open-next/server-functions/default/.next/server/app/ingredients/page_client-reference-manifest.js": {
-          "bytesInOutput": 7735
+          "bytesInOutput": 9208
         },
         ".open-next/server-functions/default/.next/server/app/debug/page_client-reference-manifest.js": {
-          "bytesInOutput": 7529
-        },
-        ".open-next/server-functions/default/.next/server/app/examples/page_client-reference-manifest.js": {
-          "bytesInOutput": 7584
-        },
-        ".open-next/server-functions/default/.next/server/app/_not-found/page_client-reference-manifest.js": {
-          "bytesInOutput": 7442
+          "bytesInOutput": 9002
         },
         ".open-next/server-functions/default/.next/server/app/api-status/page_client-reference-manifest.js": {
-          "bytesInOutput": 7639
+          "bytesInOutput": 9112
         },
-        ".open-next/server-functions/default/.next/server/app/examples/[id]/page_client-reference-manifest.js": {
-          "bytesInOutput": 7841
+        ".open-next/server-functions/default/.next/server/app/_not-found/page_client-reference-manifest.js": {
+          "bytesInOutput": 8915
         },
-        ".open-next/server-functions/default/.next/server/app/api/test-gemini/route_client-reference-manifest.js": {
-          "bytesInOutput": 7460
+        ".open-next/server-functions/default/.next/server/app/examples/page_client-reference-manifest.js": {
+          "bytesInOutput": 9057
         },
         ".open-next/server-functions/default/.next/server/app/api/test-api-key/route_client-reference-manifest.js": {
-          "bytesInOutput": 7464
-        },
-        ".open-next/server-functions/default/.next/server/app/api/test-doubao/route_client-reference-manifest.js": {
-          "bytesInOutput": 7461
+          "bytesInOutput": 8936
         },
         ".open-next/server-functions/default/.next/server/app/api/test-ai/route_client-reference-manifest.js": {
-          "bytesInOutput": 7510
-        },
-        ".open-next/server-functions/default/.next/server/app/api/upload-image/route_client-reference-manifest.js": {
-          "bytesInOutput": 7464
-        },
-        ".open-next/server-functions/default/.next/server/app/api/mock-recipe/route_client-reference-manifest.js": {
-          "bytesInOutput": 7461
+          "bytesInOutput": 8983
         },
         ".open-next/server-functions/default/.next/server/app/api/simple-test/route_client-reference-manifest.js": {
-          "bytesInOutput": 7461
+          "bytesInOutput": 8934
+        },
+        ".open-next/server-functions/default/.next/server/app/api/test-doubao/route_client-reference-manifest.js": {
+          "bytesInOutput": 8934
+        },
+        ".open-next/server-functions/default/.next/server/app/api/test-gemini/route_client-reference-manifest.js": {
+          "bytesInOutput": 8934
+        },
+        ".open-next/server-functions/default/.next/server/app/api/upload-image/route_client-reference-manifest.js": {
+          "bytesInOutput": 8937
         },
         ".open-next/server-functions/default/.next/server/app/api/recognize-ingredients/route_client-reference-manifest.js": {
-          "bytesInOutput": 7568
+          "bytesInOutput": 9041
         },
         ".open-next/server-functions/default/.next/server/app/api/generate-recipe/route_client-reference-manifest.js": {
-          "bytesInOutput": 7544
-        },
-        ".open-next/server-functions/default/.next/server/app/api/health/route_client-reference-manifest.js": {
-          "bytesInOutput": 7509
+          "bytesInOutput": 9017
         },
         ".open-next/server-functions/default/.next/server/app/api/frontend-api-status/route_client-reference-manifest.js": {
-          "bytesInOutput": 7486
+          "bytesInOutput": 8958
+        },
+        ".open-next/server-functions/default/.next/server/app/api/health/route_client-reference-manifest.js": {
+          "bytesInOutput": 8982
         },
         ".open-next/server-functions/default/.next/server/app/api/analyze-nutrition/route_client-reference-manifest.js": {
-          "bytesInOutput": 7552
+          "bytesInOutput": 9025
+        },
+        ".open-next/server-functions/default/.next/server/app/api/mock-recipe/route_client-reference-manifest.js": {
+          "bytesInOutput": 8935
+        },
+        ".open-next/server-functions/default/.next/server/app/api/generate-recipe-image/route_client-reference-manifest.js": {
+          "bytesInOutput": 8965
+        },
+        ".open-next/server-functions/default/.next/server/app/examples/[id]/page_client-reference-manifest.js": {
+          "bytesInOutput": 9360
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/load-manifest.js": {
-          "bytesInOutput": 21517
-        },
-        ".open-next/server-functions/default/node_modules/react/cjs/react-jsx-runtime.production.js": {
-          "bytesInOutput": 750
-        },
-        ".open-next/server-functions/default/node_modules/react/jsx-runtime.js": {
-          "bytesInOutput": 194
-        },
-        ".open-next/server-functions/default/.next/server/chunks/117.js": {
-          "bytesInOutput": 29618
-        },
-        ".open-next/server-functions/default/.next/server/chunks/408.js": {
-          "bytesInOutput": 14433
-        },
-        ".open-next/server-functions/default/.next/server/chunks/409.js": {
-          "bytesInOutput": 31949
-        },
-        ".open-next/server-functions/default/.next/server/chunks/447.js": {
-          "bytesInOutput": 109968
-        },
-        ".open-next/server-functions/default/.next/server/chunks/449.js": {
-          "bytesInOutput": 19715
-        },
-        ".open-next/server-functions/default/.next/server/chunks/548.js": {
-          "bytesInOutput": 71462
-        },
-        ".open-next/server-functions/default/.next/server/chunks/580.js": {
-          "bytesInOutput": 27242
-        },
-        ".open-next/server-functions/default/.next/server/chunks/627.js": {
-          "bytesInOutput": 72686
-        },
-        ".open-next/server-functions/default/.next/server/chunks/767.js": {
-          "bytesInOutput": 60178
-        },
-        ".open-next/server-functions/default/.next/server/chunks/985.js": {
-          "bytesInOutput": 184290
-        },
-        ".open-next/server-functions/default/.next/server/webpack-runtime.js": {
-          "bytesInOutput": 2021
-        },
-        ".open-next/server-functions/default/.next/server/pages/_app.js": {
-          "bytesInOutput": 3577
+          "bytesInOutput": 22286
         },
         "optional-deps-missing-dependency:/critters": {
           "bytesInOutput": 141
@@ -9373,6 +9395,12 @@
         ".open-next/server-functions/default/node_modules/react-dom/server.edge.js": {
           "bytesInOutput": 456
         },
+        ".open-next/server-functions/default/node_modules/react/cjs/react-jsx-runtime.production.js": {
+          "bytesInOutput": 750
+        },
+        ".open-next/server-functions/default/node_modules/react/jsx-runtime.js": {
+          "bytesInOutput": 194
+        },
         ".open-next/server-functions/default/node_modules/client-only/index.js": {
           "bytesInOutput": 114
         },
@@ -9385,8 +9413,47 @@
         ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/pages.runtime.prod.js": {
           "bytesInOutput": 72507
         },
+        ".open-next/server-functions/default/.next/server/chunks/185.js": {
+          "bytesInOutput": 32287
+        },
+        ".open-next/server-functions/default/.next/server/chunks/225.js": {
+          "bytesInOutput": 36069
+        },
+        ".open-next/server-functions/default/.next/server/chunks/447.js": {
+          "bytesInOutput": 109968
+        },
+        ".open-next/server-functions/default/.next/server/chunks/449.js": {
+          "bytesInOutput": 19715
+        },
+        ".open-next/server-functions/default/.next/server/chunks/548.js": {
+          "bytesInOutput": 71462
+        },
+        ".open-next/server-functions/default/.next/server/chunks/580.js": {
+          "bytesInOutput": 27242
+        },
+        ".open-next/server-functions/default/.next/server/chunks/627.js": {
+          "bytesInOutput": 72686
+        },
+        ".open-next/server-functions/default/.next/server/chunks/767.js": {
+          "bytesInOutput": 60178
+        },
+        ".open-next/server-functions/default/.next/server/chunks/792.js": {
+          "bytesInOutput": 36547
+        },
+        ".open-next/server-functions/default/.next/server/chunks/886.js": {
+          "bytesInOutput": 19278
+        },
+        ".open-next/server-functions/default/.next/server/chunks/985.js": {
+          "bytesInOutput": 184658
+        },
+        ".open-next/server-functions/default/.next/server/webpack-runtime.js": {
+          "bytesInOutput": 2054
+        },
         ".open-next/server-functions/default/.next/server/pages/_error.js": {
           "bytesInOutput": 9995
+        },
+        ".open-next/server-functions/default/.next/server/pages/_app.js": {
+          "bytesInOutput": 3577
         },
         ".open-next/server-functions/default/.next/server/pages/_document.js": {
           "bytesInOutput": 462
@@ -9407,73 +9474,76 @@
           "bytesInOutput": 518289
         },
         ".open-next/server-functions/default/.next/server/app/_not-found/page.js": {
-          "bytesInOutput": 3845
+          "bytesInOutput": 3938
         },
         ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js": {
           "bytesInOutput": 90316
         },
         ".open-next/server-functions/default/.next/server/app/api/analyze-nutrition/route.js": {
-          "bytesInOutput": 8053
-        },
-        ".open-next/server-functions/default/.next/server/app/api/generate-recipe/route.js": {
-          "bytesInOutput": 7490
+          "bytesInOutput": 4039
         },
         ".open-next/server-functions/default/.next/server/app/api/frontend-api-status/route.js": {
-          "bytesInOutput": 5283
+          "bytesInOutput": 5348
+        },
+        ".open-next/server-functions/default/.next/server/app/api/generate-recipe/route.js": {
+          "bytesInOutput": 3517
         },
         ".open-next/server-functions/default/.next/server/app/api/mock-recipe/route.js": {
-          "bytesInOutput": 3557
-        },
-        ".open-next/server-functions/default/.next/server/app/api/simple-test/route.js": {
-          "bytesInOutput": 2872
+          "bytesInOutput": 4049
         },
         ".open-next/server-functions/default/.next/server/app/api/test-ai/route.js": {
-          "bytesInOutput": 8620
-        },
-        ".open-next/server-functions/default/.next/server/app/api/test-doubao/route.js": {
-          "bytesInOutput": 2737
+          "bytesInOutput": 4503
         },
         ".open-next/server-functions/default/.next/server/app/api/test-api-key/route.js": {
-          "bytesInOutput": 5595
+          "bytesInOutput": 6621
+        },
+        ".open-next/server-functions/default/.next/server/app/api/test-doubao/route.js": {
+          "bytesInOutput": 2783
+        },
+        ".open-next/server-functions/default/.next/server/app/api/simple-test/route.js": {
+          "bytesInOutput": 2952
         },
         ".open-next/server-functions/default/.next/server/app/api/test-gemini/route.js": {
-          "bytesInOutput": 3889
+          "bytesInOutput": 3963
         },
         ".open-next/server-functions/default/.next/server/app/favicon.ico/route.js": {
-          "bytesInOutput": 36165
+          "bytesInOutput": 36241
         },
-        ".open-next/server-functions/default/.next/server/app/api/recognize-ingredients/route.js": {
-          "bytesInOutput": 4739
-        },
-        ".open-next/server-functions/default/.next/server/app/api/upload-image/route.js": {
-          "bytesInOutput": 7529
+        ".open-next/server-functions/default/.next/server/app/api/generate-recipe-image/route.js": {
+          "bytesInOutput": 12163
         },
         ".open-next/server-functions/default/.next/server/app/api/health/route.js": {
-          "bytesInOutput": 6710
+          "bytesInOutput": 6738
+        },
+        ".open-next/server-functions/default/.next/server/app/api/recognize-ingredients/route.js": {
+          "bytesInOutput": 4787
+        },
+        ".open-next/server-functions/default/.next/server/app/api/upload-image/route.js": {
+          "bytesInOutput": 7768
         },
         ".open-next/server-functions/default/.next/server/app/api-status/page.js": {
-          "bytesInOutput": 18561
+          "bytesInOutput": 21906
         },
         ".open-next/server-functions/default/.next/server/app/debug/page.js": {
-          "bytesInOutput": 14653
+          "bytesInOutput": 15723
         },
         ".open-next/server-functions/default/.next/server/app/examples/[id]/page.js": {
-          "bytesInOutput": 41651
-        },
-        ".open-next/server-functions/default/.next/server/app/ingredients/page.js": {
-          "bytesInOutput": 68773
-        },
-        ".open-next/server-functions/default/.next/server/app/examples/page.js": {
-          "bytesInOutput": 42944
+          "bytesInOutput": 43409
         },
         ".open-next/server-functions/default/.next/server/app/page.js": {
-          "bytesInOutput": 8523
+          "bytesInOutput": 11808
+        },
+        ".open-next/server-functions/default/.next/server/app/examples/page.js": {
+          "bytesInOutput": 43768
+        },
+        ".open-next/server-functions/default/.next/server/app/ingredients/page.js": {
+          "bytesInOutput": 88616
         },
         ".open-next/server-functions/default/.next/server/app/recipe/page.js": {
-          "bytesInOutput": 27737
+          "bytesInOutput": 36429
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/require.js": {
-          "bytesInOutput": 13943
+          "bytesInOutput": 14051
         },
         ".open-next/server-functions/default/node_modules/next/dist/lib/interop-default.js": {
           "bytesInOutput": 363
@@ -9752,10 +9822,10 @@
           "bytesInOutput": 704
         },
         ".open-next/server-functions/default/index.mjs": {
-          "bytesInOutput": 51607
+          "bytesInOutput": 51763
         }
       },
-      "bytes": 6624555
+      "bytes": 6753784
     }
   }
 }

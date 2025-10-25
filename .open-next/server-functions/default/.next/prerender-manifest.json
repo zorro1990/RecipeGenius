@@ -1,12 +1,7 @@
 {
   "version": 4,
   "routes": {
-    "/favicon.ico": {
-      "initialHeaders": {
-        "cache-control": "public, max-age=0, must-revalidate",
-        "content-type": "image/x-icon",
-        "x-next-cache-tags": "_N_T_/layout,_N_T_/favicon.ico/layout,_N_T_/favicon.ico/route,_N_T_/favicon.ico"
-      },
+    "/api-status": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -19,8 +14,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/favicon.ico",
-      "dataRoute": null,
+      "srcRoute": "/api-status",
+      "dataRoute": "/api-status.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -54,30 +49,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/recipe": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/recipe",
-      "dataRoute": "/recipe.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/debug": {
       "experimentalBypassFor": [
         {
@@ -93,6 +64,35 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/debug",
       "dataRoute": "/debug.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/favicon.ico": {
+      "initialHeaders": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "image/x-icon",
+        "x-next-cache-tags": "_N_T_/layout,_N_T_/favicon.ico/layout,_N_T_/favicon.ico/route,_N_T_/favicon.ico"
+      },
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/favicon.ico",
+      "dataRoute": null,
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -150,7 +150,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/api-status": {
+    "/recipe": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -163,8 +163,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/api-status",
-      "dataRoute": "/api-status.rsc",
+      "srcRoute": "/recipe",
+      "dataRoute": "/recipe.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -178,8 +178,8 @@
   "dynamicRoutes": {},
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "21fa2a24eaa32f2732eec86fc892611d",
-    "previewModeSigningKey": "7158ae3a9263ff53bd452af806db53ea0f633de85abacc3be8a0c8fbc240826e",
-    "previewModeEncryptionKey": "bf18a75b852099c77f8b43573ceacdc29d69c76bcb2da98f40f9ca5df3840b5e"
+    "previewModeId": "05e33f921e37bdbc5d2a2bad3685843f",
+    "previewModeSigningKey": "33fe908f745b176208ad71f450bcf8e172d8280bd55ed2aa505b848f97543c10",
+    "previewModeEncryptionKey": "dc3b14e380cc3a3f1c7494c6d6aba6a5d9c10a31b509309458c5107245b27a0c"
   }
 }

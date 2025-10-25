@@ -182,16 +182,20 @@ export async function getCachedAPIResponse<T>(
 // 请求上下文生成
 export function createRequestContext(request: Request): RequestContext {
   const headers = request.headers;
-  const cf = (request as RequestWithCF).cf || {};
-  
+  const cf = (request as RequestWithCF).cf;
+
+  const country = typeof cf?.country === 'string' && cf.country.length > 0 ? cf.country : undefined;
+  const region = typeof cf?.region === 'string' && cf.region.length > 0 ? cf.region : undefined;
+  const city = typeof cf?.city === 'string' && cf.city.length > 0 ? cf.city : undefined;
+
   return {
     id: generateRequestId(),
     timestamp: Date.now(),
     userAgent: headers.get('user-agent') || undefined,
     ip: headers.get('cf-connecting-ip') || headers.get('x-forwarded-for') || undefined,
-    country: cf.country || undefined,
-    region: cf.region || undefined,
-    city: cf.city || undefined
+    country,
+    region,
+    city,
   };
 }
 

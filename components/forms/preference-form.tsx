@@ -266,7 +266,9 @@ export function PreferenceForm({
                     >
                       <span className="flex items-center gap-1">
                         {condition.name}
-                        <Info className="size-3" title={condition.description} />
+                        <span title={condition.description} className="inline-flex">
+                          <Info className="size-3" />
+                        </span>
                       </span>
                     </Badge>
                   ))}

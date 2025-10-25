@@ -13,8 +13,10 @@ import { ImageIngredientRecognition } from '@/components/image-ingredient-recogn
 import { ApiResponse, Recipe, UserPreferences } from '@/lib/types';
 import { hasAnyAPIKey, getStoredAPIKeys, getPreferredRecipeProvider } from '@/lib/api-key-storage';
 import { filterIngredientsByPreferences, generateFilterExplanation } from '@/lib/ingredient-filter';
-import { Loader2, ChefHat, ArrowLeft, Sparkles, Settings, Camera } from 'lucide-react';
+import { Loader2, ChefHat, ArrowLeft, Sparkles, Settings, Camera, CheckCircle, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
+
+type CTAState = 'idle-disabled' | 'idle-ready' | 'loading' | 'success' | 'failure';
 
 export default function IngredientsPage() {
   const [ingredients, setIngredients] = useState<string[]>([]);
@@ -27,12 +29,12 @@ export default function IngredientsPage() {
     allergies: [],
     healthConditions: [],
   });
-  const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isAPISettingsOpen, setIsAPISettingsOpen] = useState(false);
   const [hasAPIKeys, setHasAPIKeys] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [ctaState, setCtaState] = useState<CTAState>('idle-disabled');
   const router = useRouter();
 
   // 检查API密钥状态
@@ -58,6 +60,7 @@ export default function IngredientsPage() {
     if (ingredients.length === 0) {
       console.log('❌ 没有食材');
       setError('请至少添加一种食材');
+      setCtaState('idle-disabled');
       return;
     }
 
@@ -65,11 +68,12 @@ export default function IngredientsPage() {
     if (!hasAPIKeys) {
       console.log('❌ 没有API密钥');
       setError('要生成个性化菜谱，需要配置AI服务。点击右上角按钮进行配置。');
+      setCtaState('idle-ready');
       return;
     }
 
     console.log('✅ 开始调用API');
-    setIsGenerating(true);
+    setCtaState('loading');
     setError(null);
 
     // 🛡️ 食材预过滤
@@ -106,7 +110,7 @@ export default function IngredientsPage() {
     // 如果所有食材都被过滤了
     if (allowedIngredients.length === 0) {
       setError(`所有食材都不符合您的饮食要求：\n${generateFilterExplanation(filteredIngredients, filterReasons)}`);
-      setIsGenerating(false);
+      setCtaState('failure');
       return;
     }
 
@@ -183,6 +187,7 @@ export default function IngredientsPage() {
         localStorage.setItem('currentRecipe', JSON.stringify(responseBody.data.recipe));
         localStorage.setItem('recipeIngredients', JSON.stringify(ingredients));
         localStorage.setItem('recipePreferences', JSON.stringify(preferences));
+        setCtaState('success');
 
         // 跳转到菜谱展示页面
         router.push('/recipe');
@@ -208,16 +213,108 @@ export default function IngredientsPage() {
       }
 
       setError(errorMessage);
+      setCtaState('failure');
     } finally {
       // 确保清理定时器
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
-      setIsGenerating(false);
     }
   };
 
-  const canGenerate = ingredients.length > 0 && !isGenerating;
+  const updateIngredientList = (nextIngredients: string[]) => {
+    setIngredients(nextIngredients);
+    setError(null);
+
+    if (nextIngredients.length === 0) {
+      setCtaState('idle-disabled');
+    } else if (ctaState !== 'loading') {
+      setCtaState('idle-ready');
+    }
+  };
+
+  const ctaTitle = (() => {
+    switch (ctaState) {
+      case 'failure':
+        return '生成遇到问题';
+      case 'success':
+        return '菜谱已准备好';
+      default:
+        return '准备好了吗？';
+    }
+  })();
+
+  const ctaSupportingText = (() => {
+    switch (ctaState) {
+      case 'idle-disabled':
+        return '还没有食材，请上传或手动添加';
+      case 'idle-ready':
+        return `已添加 ${ingredients.length} 种食材，点击生成专属菜谱`;
+      case 'loading':
+        return 'AI 正在根据您确认的食材生成菜谱，请稍候';
+      case 'success':
+        return '生成完成，稍后将为你展示菜谱详情';
+      case 'failure':
+        return '生成失败，请查看上方提示后重试';
+      default:
+        return '';
+    }
+  })();
+
+  const ctaButtonContent = (() => {
+    switch (ctaState) {
+      case 'loading':
+        return (
+          <>
+            <Loader2 className="mr-2 size-5 animate-spin" />
+            AI 正在创建菜谱...
+          </>
+        );
+      case 'success':
+        return (
+          <>
+            <CheckCircle className="mr-2 size-5" />
+            查看菜谱详情
+          </>
+        );
+      case 'failure':
+        return (
+          <>
+            <RefreshCw className="mr-2 size-5" />
+            重新尝试生成
+          </>
+        );
+      case 'idle-disabled':
+        return (
+          <>
+            <Sparkles className="mr-2 size-5" />
+            请先确认食材
+          </>
+        );
+      case 'idle-ready':
+      default:
+        return (
+          <>
+            <Sparkles className="mr-2 size-5" />
+            生成我的专属菜谱
+          </>
+        );
+    }
+  })();
+
+  const ctaCardGradient = (() => {
+    switch (ctaState) {
+      case 'failure':
+        return 'from-red-500 to-rose-500';
+      case 'success':
+        return 'from-green-500 to-emerald-500';
+      default:
+        return 'from-orange-500 to-red-500';
+    }
+  })();
+
+  const ctaButtonDisabled = ctaState === 'idle-disabled' || ctaState === 'loading';
+  const showEstimate = ctaState === 'idle-ready' || ctaState === 'loading';
 
   // 防止 hydration 错误
   if (!mounted) {
@@ -286,7 +383,7 @@ export default function IngredientsPage() {
               </CardHeader>
               <CardContent>
                 <IngredientInput
-                  onIngredientsChange={setIngredients}
+                  onIngredientsChange={updateIngredientList}
                   initialIngredients={ingredients}
                 />
               </CardContent>
@@ -295,6 +392,7 @@ export default function IngredientsPage() {
 
           <TabsContent value="image-recognition">
             <ImageIngredientRecognition
+              isGenerating={ctaState === 'loading'}
               onIngredientsConfirmed={(recognizedIngredients) => {
                 // 将识别的食材添加到现有列表中
                 const newIngredients = [...ingredients];
@@ -307,18 +405,12 @@ export default function IngredientsPage() {
                   }
                 });
 
-                setIngredients(newIngredients);
+                updateIngredientList(newIngredients);
 
-                // 显示成功消息
-                setError(null);
-                setSuccessMessage(
-                  addedCount > 0
-                    ? `成功识别并添加了 ${addedCount} 种食材！您可以在"手动输入"标签页查看和编辑。`
-                    : '识别完成！所有食材都已在列表中。'
-                );
-
-                // 3秒后清除成功消息
-                setTimeout(() => setSuccessMessage(null), 5000);
+                if (addedCount > 0) {
+                  setSuccessMessage(`成功识别并添加了 ${addedCount} 种食材！您可以在"手动输入"标签页查看和编辑。`);
+                  setTimeout(() => setSuccessMessage(null), 5000);
+                }
               }}
             />
           </TabsContent>
@@ -371,16 +463,12 @@ export default function IngredientsPage() {
             </div>
           )}
           
-          <Card className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0">
+          <Card className={`bg-gradient-to-r ${ctaCardGradient} text-white border-0 transition-colors`}>
             <CardContent className="p-6">
-              <div className="text-center space-y-4">
+              <div className="text-center space-y-4" aria-live="polite">
                 <div className="space-y-2">
-                  <h3 className="text-xl font-bold">准备好了吗？</h3>
-                  <p className="opacity-90">
-                    {ingredients.length > 0 
-                      ? `已添加 ${ingredients.length} 种食材，点击生成专属菜谱`
-                      : '请先添加一些食材'}
-                  </p>
+                  <h3 className="text-xl font-bold">{ctaTitle}</h3>
+                  <p className="opacity-90">{ctaSupportingText}</p>
                 </div>
                 
                 <Button
@@ -388,28 +476,20 @@ export default function IngredientsPage() {
                     console.log('🖱️ 按钮被点击');
                     handleGenerateRecipe();
                   }}
-                  disabled={!canGenerate}
+                  disabled={ctaButtonDisabled}
                   size="lg"
                   variant="secondary"
-                  className="text-lg px-8 py-4 font-semibold"
+                  className="text-lg px-8 py-4 font-semibold data-[cta-state=failure]:text-red-600 data-[cta-state=success]:text-emerald-700"
                   data-generate-button
+                  data-cta-state={ctaState}
+                  aria-busy={ctaState === 'loading'}
                 >
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="mr-2 size-5 animate-spin" />
-                      AI正在创作中...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="mr-2 size-5" />
-                      生成我的专属菜谱
-                    </>
-                  )}
+                  {ctaButtonContent}
                 </Button>
                 
-                {ingredients.length > 0 && (
+                {showEstimate && (
                   <div className="text-sm opacity-75">
-                    预计生成时间：5-10秒
+                    预计生成时间：约 1 分钟
                   </div>
                 )}
               </div>

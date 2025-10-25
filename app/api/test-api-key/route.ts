@@ -332,8 +332,16 @@ async function testSeedreamAPI(apiKey: string, modelId: string): Promise<boolean
     throw new Error(`Seedream API错误 (${response.status}): ${errorText}`);
   }
 
-  const data = await response.json();
-  console.log('✅ Seedream API测试成功:', data?.data?.task_id || data);
+  type SeedreamTestResponse = {
+    data?: {
+      task_id?: string;
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  };
+
+  const data = (await response.json()) as SeedreamTestResponse;
+  console.log('✅ Seedream API测试成功:', data.data?.task_id ?? data);
   return true;
 }
 

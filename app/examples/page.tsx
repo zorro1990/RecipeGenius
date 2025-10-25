@@ -31,7 +31,7 @@ function deriveStepTitle(description: string, index: number): string {
   return `步骤 ${index + 1}`;
 }
 
-function convertSteps(stepTexts: string[], difficulty: 'easy' | 'medium' | 'hard'): RecipeStep[] {
+function convertSteps(stepTexts: readonly string[], difficulty: 'easy' | 'medium' | 'hard'): RecipeStep[] {
   const [min, max] = STEP_DURATION_RANGE[difficulty];
   return stepTexts.map((text, index) => {
     const ratio = stepTexts.length > 1 ? index / (stepTexts.length - 1) : 0.5;
@@ -46,8 +46,40 @@ function convertSteps(stepTexts: string[], difficulty: 'easy' | 'medium' | 'hard
   });
 }
 
+type ExampleIngredient = {
+  name: string;
+  quantity: string;
+  unit: string;
+};
+
+type ExampleNutrition = {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+};
+
+type ExampleRecipeDefinition = {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  cookingTime: number;
+  servings: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  rating: number;
+  tags: string[];
+  cuisine: string;
+  mealType: string;
+  ingredients: ExampleIngredient[];
+  steps: string[];
+  nutrition: ExampleNutrition;
+  tips: string[];
+};
+
 // 示例菜谱数据
-const rawExampleRecipes = [
+const rawExampleRecipes: ExampleRecipeDefinition[] = [
   {
     id: '1',
     title: '西红柿鸡蛋面',
@@ -740,15 +772,23 @@ const exampleRecipes = rawExampleRecipes.map((recipe) => ({
   steps: convertSteps(recipe.steps, recipe.difficulty),
 }));
 
+const CUISINE_OPTIONS = ['全部', '中式', '川菜', '粤菜', '沪菜', '创新'] as const;
+const DIFFICULTY_OPTIONS = ['全部', 'easy', 'medium', 'hard'] as const;
+const MEAL_TYPE_OPTIONS = ['全部', '早餐', '午餐', '晚餐', '甜品'] as const;
+
+type CuisineFilter = (typeof CUISINE_OPTIONS)[number];
+type DifficultyFilter = (typeof DIFFICULTY_OPTIONS)[number];
+type MealTypeFilter = (typeof MEAL_TYPE_OPTIONS)[number];
+
 export default function ExamplesPage() {
-  const [selectedCuisine, setSelectedCuisine] = useState<string>('全部');
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('全部');
-  const [selectedMealType, setSelectedMealType] = useState<string>('全部');
+  const [selectedCuisine, setSelectedCuisine] = useState<CuisineFilter>('全部');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyFilter>('全部');
+  const [selectedMealType, setSelectedMealType] = useState<MealTypeFilter>('全部');
 
   // 筛选选项
-  const cuisineOptions = ['全部', '中式', '川菜', '粤菜', '沪菜', '创新'];
-  const difficultyOptions = ['全部', 'easy', 'medium', 'hard'];
-  const mealTypeOptions = ['全部', '早餐', '午餐', '晚餐', '甜品'];
+  const cuisineOptions = CUISINE_OPTIONS;
+  const difficultyOptions = DIFFICULTY_OPTIONS;
+  const mealTypeOptions = MEAL_TYPE_OPTIONS;
 
   // 筛选菜谱
   const filteredRecipes = exampleRecipes.filter(recipe => {
@@ -758,12 +798,16 @@ export default function ExamplesPage() {
     return cuisineMatch && difficultyMatch && mealTypeMatch;
   });
 
-  const getDifficultyText = (difficulty: string) => {
+  const getDifficultyText = (difficulty: DifficultyFilter): string => {
     switch (difficulty) {
-      case 'easy': return '简单';
-      case 'medium': return '中等';
-      case 'hard': return '困难';
-      default: return difficulty;
+      case 'easy':
+        return '简单';
+      case 'medium':
+        return '中等';
+      case 'hard':
+        return '困难';
+      default:
+        return difficulty;
     }
   };
 

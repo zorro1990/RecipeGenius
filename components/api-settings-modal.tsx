@@ -92,10 +92,22 @@ interface ProviderState {
   error: string | null;
 }
 
+function createEmptyProviderState(provider: ProviderKey): ProviderState {
+  return {
+    apiKey: '',
+    endpointId: provider === 'doubao' ? '' : undefined,
+    modelId: provider === 'seedream' ? '' : undefined,
+    isVisible: false,
+    isValidating: false,
+    isValid: null,
+    error: null,
+  };
+}
+
 export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettingsModalProps) {
   const [providers, setProviders] = useState<ProvidersState>({});
   const [showWarning, setShowWarning] = useState(true);
-  const [preferredRecipeProvider, setPreferredRecipeProviderState] = useState<string>('');
+  const [preferredRecipeProvider, setPreferredRecipeProviderState] = useState<ProviderKey | ''>('');
   const [activeTab, setActiveTab] = useState<'image' | 'media' | 'recipe'>('image');
 
   // 初始化状态
@@ -105,14 +117,16 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
       const initialState: ProvidersState = {};
 
       PROVIDER_KEYS.forEach((provider) => {
+        const baseState = createEmptyProviderState(provider);
         initialState[provider] = {
+          ...baseState,
           apiKey: getStoredProviderKey(stored, provider),
-          endpointId: provider === 'doubao' ? stored.doubaoEndpointId || '' : undefined,
-          modelId: provider === 'seedream' ? stored.seedreamModelId || '' : undefined,
-          isVisible: false,
-          isValidating: false,
-          isValid: null,
-          error: null,
+          endpointId: provider === 'doubao'
+            ? stored.doubaoEndpointId || ''
+            : baseState.endpointId,
+          modelId: provider === 'seedream'
+            ? stored.seedreamModelId || ''
+            : baseState.modelId,
         };
       });
 
@@ -120,7 +134,11 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
 
       // 加载首选菜谱生成模型
       const preferred = getPreferredRecipeProvider();
-      setPreferredRecipeProviderState(preferred || '');
+      if (preferred && PROVIDER_KEYS.includes(preferred as ProviderKey)) {
+        setPreferredRecipeProviderState(preferred as ProviderKey);
+      } else {
+        setPreferredRecipeProviderState('');
+      }
     }
   }, [isOpen]);
 
@@ -298,17 +316,19 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
     if (confirm('确定要清除所有API密钥吗？此操作不可撤销。')) {
       clearStoredAPIKeys();
       setProviders(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(provider => {
-          updated[provider] = {
-            ...updated[provider],
+        const nextState: ProvidersState = {};
+        PROVIDER_KEYS.forEach((provider) => {
+          const previous = prev[provider] ?? createEmptyProviderState(provider);
+          nextState[provider] = {
+            ...previous,
             apiKey: '',
-            endpointId: '',
+            endpointId: provider === 'doubao' ? '' : previous.endpointId,
+            modelId: provider === 'seedream' ? '' : previous.modelId,
             isValid: null,
-            error: null
+            error: null,
           };
         });
-        return updated;
+        return nextState;
       });
       onKeysUpdated?.();
     }
@@ -416,14 +436,7 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
               {(() => {
                 const provider: ProviderKey = 'doubao';
                 const info = API_PROVIDERS[provider];
-                const state: ProviderState = providers[provider] ?? {
-                  apiKey: '',
-                  endpointId: '',
-                  isVisible: false,
-                  isValidating: false,
-                  isValid: null,
-                  error: null,
-                };
+                const state: ProviderState = providers[provider] ?? createEmptyProviderState(provider);
 
                 return (
                   <Card key={provider} className="border-2">
@@ -582,14 +595,7 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
               {(() => {
                 const provider: ProviderKey = 'seedream';
                 const info = API_PROVIDERS[provider];
-                const state: ProviderState = providers[provider] ?? {
-                  apiKey: '',
-                  modelId: '',
-                  isVisible: false,
-                  isValidating: false,
-                  isValid: null,
-                  error: null,
-                };
+                const state: ProviderState = providers[provider] ?? createEmptyProviderState(provider);
 
                 return (
                   <Card key={provider} className="border-2">
@@ -808,7 +814,7 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {Object.entries(API_PROVIDERS)
+                    {(Object.entries(API_PROVIDERS) as Array<[ProviderKey, ProviderInfo]>)
                       .filter(([provider]) => provider !== 'doubao' && provider !== 'seedream') // 排除非菜谱模型
                       .map(([provider, info]) => {
                         const state = providers[provider];
@@ -830,7 +836,9 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
                               name="preferredRecipeProvider"
                               value={provider}
                               checked={preferredRecipeProvider === provider}
-                              onChange={(e) => setPreferredRecipeProviderState(e.target.value)}
+                              onChange={(e) =>
+                                setPreferredRecipeProviderState(e.target.value as ProviderKey)
+                              }
                               disabled={!isConfigured}
                               className="text-green-600"
                             />
@@ -863,14 +871,7 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
                 {(Object.entries(API_PROVIDERS) as Array<[ProviderKey, ProviderInfo]>)
                   .filter(([provider]) => provider !== 'doubao' && provider !== 'seedream')
                   .map(([provider, info]) => {
-              const state: ProviderState = providers[provider] ?? {
-                apiKey: '',
-                isVisible: false,
-                isValidating: false,
-                isValid: null,
-                error: null,
-                endpointId: provider === 'doubao' ? providers[provider]?.endpointId : undefined,
-              };
+              const state: ProviderState = providers[provider] ?? createEmptyProviderState(provider);
 
               return (
                 <Card key={provider} className="border-2">

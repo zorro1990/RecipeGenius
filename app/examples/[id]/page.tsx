@@ -31,7 +31,7 @@ function deriveStepTitle(description: string, index: number): string {
   return `步骤 ${index + 1}`;
 }
 
-function convertSteps(stepTexts: string[], difficulty: 'easy' | 'medium' | 'hard'): RecipeStep[] {
+function convertSteps(stepTexts: readonly string[], difficulty: 'easy' | 'medium' | 'hard'): RecipeStep[] {
   const [min, max] = STEP_DURATION_RANGE[difficulty];
   return stepTexts.map((text, index) => {
     const ratio = stepTexts.length > 1 ? index / (stepTexts.length - 1) : 0.5;

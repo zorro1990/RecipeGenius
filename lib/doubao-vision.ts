@@ -160,7 +160,7 @@ export class DoubaoVisionClient {
           'Authorization': `Bearer ${this.apiKey}`
         },
         body: JSON.stringify(request),
-        signal: AbortSignal.timeout(30000) // 30秒超时
+        signal: AbortSignal.timeout(60000) // 60秒超时
       });
 
       if (!response.ok) {
@@ -249,9 +249,9 @@ export class DoubaoVisionClient {
 
       // 清理和标准化食材名称
       const cleanedIngredients = parsed.ingredients
-        .filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
-        .map(item => item.trim())
-        .filter((item, index, arr) => arr.indexOf(item) === index); // 去重
+        .filter((item: unknown): item is string => typeof item === 'string' && item.trim().length > 0)
+        .map((item: string) => item.trim())
+        .filter((item: string, index: number, arr: string[]) => arr.indexOf(item) === index); // 去重
 
       return {
         ingredients: cleanedIngredients,
@@ -260,10 +260,10 @@ export class DoubaoVisionClient {
         description: typeof parsed.description === 'string' ? 
           parsed.description.trim() : '已识别图片中的食材',
         suggestions: Array.isArray(parsed.suggestions)
-          ? parsed.suggestions.filter((item): item is string => typeof item === 'string')
+          ? parsed.suggestions.filter((item: unknown): item is string => typeof item === 'string')
           : [],
         categories: Array.isArray(parsed.categories)
-          ? parsed.categories.filter((item): item is string => typeof item === 'string')
+          ? parsed.categories.filter((item: unknown): item is string => typeof item === 'string')
           : [],
       };
 

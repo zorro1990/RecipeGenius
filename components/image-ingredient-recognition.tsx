@@ -7,13 +7,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Camera, 
-  Loader2, 
-  AlertCircle, 
-  CheckCircle, 
+import {
+  Camera,
+  Loader2,
+  AlertCircle,
+  CheckCircle,
   RefreshCw,
-  Sparkles
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  Info
 } from 'lucide-react';
 import { getStoredAPIKeys } from '@/lib/api-key-storage';
 import {
@@ -42,13 +45,15 @@ interface RecognizeApiResponse {
 interface ImageIngredientRecognitionProps {
   onIngredientsConfirmed: (ingredients: string[]) => void;
   className?: string;
+  isGenerating?: boolean;
 }
 
-type RecognitionState = 'idle' | 'uploading' | 'recognizing' | 'success' | 'confirmed' | 'error';
+type RecognitionState = 'idle' | 'uploading' | 'recognizing' | 'success' | 'error';
 
 export function ImageIngredientRecognition({
   onIngredientsConfirmed,
-  className = ''
+  className = '',
+  isGenerating = false
 }: ImageIngredientRecognitionProps) {
   const [state, setState] = useState<RecognitionState>('idle');
   const [selectedImage, setSelectedImage] = useState<{
@@ -64,6 +69,7 @@ export function ImageIngredientRecognition({
   } | null>(null);
   const [progress, setProgress] = useState(0);
   const [retryCount, setRetryCount] = useState(0);
+  const [showFeatureInfo, setShowFeatureInfo] = useState(false);
 
   // 处理图片选择
   const handleImageSelect = useCallback(async (file: File, compressedDataUrl: string) => {
@@ -102,7 +108,7 @@ export function ImageIngredientRecognition({
           },
           options: {
             maxRetries: 2,
-            timeout: 30000
+            timeout: 60000
           }
         }),
       });
@@ -167,24 +173,15 @@ export function ImageIngredientRecognition({
   }, [selectedImage, handleImageSelect]);
 
   // 确认食材并直接生成菜谱
-  const handleConfirmIngredients = useCallback((ingredients: string[]) => {
+  const handleIngredientsUpdate = useCallback((ingredients: string[]) => {
     onIngredientsConfirmed(ingredients);
-    // 保持识别结果，但切换到确认状态
-    setState('confirmed');
-
-    // 直接触发菜谱生成
-    setTimeout(() => {
-      const generateButton = document.querySelector('[data-generate-button]') as HTMLButtonElement;
-      if (generateButton && !generateButton.disabled) {
-        generateButton.click();
-      }
-    }, 500); // 给用户一点时间看到确认状态
   }, [onIngredientsConfirmed]);
 
   // 取消操作
   const handleCancel = useCallback(() => {
     handleImageRemove();
-  }, [handleImageRemove]);
+    onIngredientsConfirmed([]);
+  }, [handleImageRemove, onIngredientsConfirmed]);
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -194,10 +191,55 @@ export function ImageIngredientRecognition({
           <Camera className="size-6 text-primary" />
           <h2 className="text-xl font-semibold">AI图片食材识别</h2>
         </div>
-        <p className="text-gray-600">
-          上传食材图片，AI将自动识别其中的食材并生成菜谱
-        </p>
+        <div className="space-y-3">
+          <p className="text-gray-600">
+            上传食材图片，AI 将自动识别其中的食材并生成菜谱
+          </p>
+          <div className="flex flex-col items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2">
+              <Info className="size-4 text-primary" />
+              <span>支持 JPG / PNG / WebP，单张图片不超过 5MB</span>
+            </div>
+            <button
+              type="button"
+              className="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors"
+              onClick={() => setShowFeatureInfo(prev => !prev)}
+              aria-expanded={showFeatureInfo}
+              aria-controls="ingredient-upload-features"
+            >
+              <span>{showFeatureInfo ? '收起功能亮点' : '了解更多功能亮点'}</span>
+              {showFeatureInfo ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+            </button>
+          </div>
+        </div>
       </div>
+
+      {showFeatureInfo && (
+        <Card id="ingredient-upload-features" className="bg-blue-50 border-blue-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-blue-800 flex items-center gap-2">
+              <Sparkles className="size-5" />
+              功能亮点
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-blue-700">
+            <ul className="space-y-2 text-sm text-left">
+              <li className="flex items-start gap-2">
+                <CheckCircle className="mt-0.5 size-4 text-blue-600" />
+                <span>自动压缩与优化，确保上传快速稳定</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="mt-0.5 size-4 text-blue-600" />
+                <span>识别结果可编辑，保留手动补充的灵活性</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="mt-0.5 size-4 text-blue-600" />
+                <span>识别成功后即可一键生成专属菜谱</span>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+      )}
 
       {/* 图片上传区域 */}
       {state === 'idle' && (
@@ -255,61 +297,11 @@ export function ImageIngredientRecognition({
       {state === 'success' && recognitionResult && (
         <IngredientRecognitionResult
           result={recognitionResult}
-          onConfirm={handleConfirmIngredients}
+          onConfirm={handleIngredientsUpdate}
           onRetry={handleRetry}
           onCancel={handleCancel}
-          isLoading={false}
+          isLoading={isGenerating}
         />
-      )}
-
-      {/* 确认状态 - 显示已确认的食材和生成按钮 */}
-      {state === 'confirmed' && recognitionResult && (
-        <Card className="border-green-200 bg-green-50">
-          <CardContent className="p-6">
-            <div className="text-center space-y-4">
-              <div className="flex items-center justify-center gap-2 text-green-700">
-                <CheckCircle className="size-6" />
-                <h3 className="text-lg font-semibold">食材已确认</h3>
-              </div>
-
-              <p className="text-green-600 text-sm">
-                已成功识别并添加食材到您的列表中，现在可以生成菜谱了！
-              </p>
-
-              <div className="flex gap-3 justify-center">
-                <Button
-                  onClick={() => {
-                    // 重置到初始状态，允许重新识别
-                    setSelectedImage(null);
-                    setRecognitionResult(null);
-                    setState('idle');
-                  }}
-                  variant="outline"
-                  size="sm"
-                >
-                  重新识别
-                </Button>
-
-                <Button
-                  onClick={() => {
-                    // 直接触发菜谱生成
-                    const generateButton = document.querySelector('[data-generate-button]') as HTMLButtonElement;
-                    if (generateButton && !generateButton.disabled) {
-                      generateButton.click();
-                    } else {
-                      // 如果按钮不可用，滚动到生成区域
-                      generateButton?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                  }}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  <Sparkles className="size-4 mr-2" />
-                  立即生成菜谱
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       )}
 
       {/* 错误状态 */}
@@ -383,39 +375,7 @@ export function ImageIngredientRecognition({
         </Card>
       )}
 
-      {/* 功能说明 */}
-      <Card className="bg-blue-50 border-blue-200">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-blue-800 flex items-center gap-2">
-            <Sparkles className="size-5" />
-            功能特点
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-blue-700">
-          <ul className="space-y-2 text-sm">
-            <li className="flex items-center gap-2">
-              <CheckCircle className="size-4 text-blue-600" />
-              支持JPG、PNG、WebP格式图片
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle className="size-4 text-blue-600" />
-              自动压缩优化，提升识别速度
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle className="size-4 text-blue-600" />
-              AI智能识别，支持多种食材
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle className="size-4 text-blue-600" />
-              可编辑结果，确保准确性
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle className="size-4 text-blue-600" />
-              一键生成菜谱，省时省力
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
+      {/* 功能说明入口已移至顶部折叠 */}
     </div>
   );
 }

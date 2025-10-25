@@ -2,7 +2,7 @@
   "version": 1,
   "config": {
     "env": {
-      "BUILD_TIME": "2025-06-24T12:51:57.606Z",
+      "BUILD_TIME": "2025-10-24T09:33:13.683Z",
       "APP_VERSION": "0.1.0"
     },
     "eslint": {
@@ -104,7 +104,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius",
+    "outputFileTracingRoot": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius",
     "experimental": {
       "nodeMiddleware": false,
       "cacheLife": {
@@ -296,7 +296,7 @@
           "as": "*.js"
         }
       },
-      "root": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius"
+      "root": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius"
     },
     "serverExternalPackages": [],
     "compiler": {
@@ -319,7 +319,7 @@
     },
     "_originalRedirects": []
   },
-  "appDir": "/Users/zorro/Documents/augment-projects/cooker/recipe-genius",
+  "appDir": "/Users/zorro/Documents/AI 编程项目文件/配方天才-codex/RecipeGenius",
   "relativeAppDir": "",
   "files": [
     ".next/routes-manifest.json",
