@@ -64,10 +64,10 @@ export default function HomePage() {
                   RecipeGenius
                 </h1>
                 <p className="text-2xl md:text-3xl text-white/95 mb-4 max-w-3xl mx-auto drop-shadow-lg font-medium">
-                  家里有食材不知道做什么？
+                  AI 智能营养师，让家常菜更安心。
                 </p>
                 <p className="text-lg md:text-xl text-white/80 mb-12 max-w-2xl mx-auto drop-shadow">
-                  30秒AI智能分析，把你的食材变成专业菜谱 • 完全免费 • 无需注册
+                  30 秒生成菜谱，自动过滤过敏源与慢性病禁忌，让健康多一道保障。
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8">
@@ -78,7 +78,7 @@ export default function HomePage() {
                   </Link>
                   <Link href="/examples">
                     <Button variant="outline" size="lg" className="text-lg px-8 py-6 bg-white/20 border-white/30 text-white hover:bg-white/30 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
-                      查看成功案例
+                      查看家常菜谱
                     </Button>
                   </Link>
                 </div>

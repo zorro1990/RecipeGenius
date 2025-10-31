@@ -1,3 +1,5 @@
+import type { KeyboardEvent } from 'react';
+
 import { cn } from '@/lib/utils';
 
 export type StepStatus = 'complete' | 'current' | 'upcoming';
@@ -12,9 +14,10 @@ export interface StepItem {
 export interface StepperProps {
   steps: StepItem[];
   className?: string;
+  onStepClick?: (step: StepItem, index: number) => void;
 }
 
-export function Stepper({ steps, className }: StepperProps) {
+export function Stepper({ steps, className, onStepClick }: StepperProps) {
   return (
     <ol className={cn('flex w-full flex-col gap-4 md:flex-row md:items-start', className)}>
       {steps.map((step, index) => {
@@ -26,9 +29,32 @@ export function Stepper({ steps, className }: StepperProps) {
               ? 'border-brand-primary text-brand-primary'
               : 'border-border text-muted-foreground';
 
+        const interactive = typeof onStepClick === 'function';
+
+        const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+          if (!interactive) return;
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onStepClick?.(step, index);
+          }
+        };
+
         return (
           <li key={step.id} className="relative flex-1">
-            <div className="flex items-start gap-3">
+            <div
+              className={cn(
+                'group flex items-start gap-3 rounded-2xl border border-transparent p-3 transition-colors',
+                step.status === 'current' && 'border-border bg-surface-muted shadow-soft',
+                interactive
+                  ? 'cursor-pointer hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/60'
+                  : 'cursor-default',
+                interactive && step.status === 'complete' && 'hover:border-brand-primary/40'
+              )}
+              role={interactive ? 'button' : undefined}
+              tabIndex={interactive ? 0 : undefined}
+              onClick={interactive ? () => onStepClick?.(step, index) : undefined}
+              onKeyDown={handleKeyDown}
+            >
               <div
                 className={cn(
                   'flex size-8 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors',
@@ -64,4 +90,3 @@ export function Stepper({ steps, className }: StepperProps) {
     </ol>
   );
 }
-

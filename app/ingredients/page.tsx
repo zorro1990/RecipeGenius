@@ -379,15 +379,15 @@ export default function IngredientsPage() {
           <div className="flex items-center justify-center gap-6 mt-4 text-sm text-gray-500">
             <div className="flex items-center gap-2">
               <Camera className="size-4 text-blue-500" />
-              <span>AI图片识别</span>
+              <span>输入食材</span>
             </div>
             <div className="flex items-center gap-2">
               <span>✏️</span>
-              <span>手动输入</span>
+              <span>设置偏好</span>
             </div>
             <div className="flex items-center gap-2">
               <Sparkles className="size-4 text-orange-500" />
-              <span>智能生成</span>
+              <span>AI 生成菜谱</span>
             </div>
           </div>
         </div>
@@ -423,7 +423,7 @@ export default function IngredientsPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="image-recognition">
+          <TabsContent value="image-recognition" forceMount>
             <ImageIngredientRecognition
               isGenerating={ctaState === 'loading'}
               onIngredientsConfirmed={(recognizedIngredients) => {
