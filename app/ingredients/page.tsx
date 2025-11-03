@@ -19,6 +19,7 @@ import { StoryflowOverlay } from '@/components/generation/storyflow-overlay';
 import { StepItem } from '@/components/ui/stepper';
 
 type CTAState = 'idle-disabled' | 'idle-ready' | 'loading' | 'success' | 'failure';
+const GENERATE_RECIPE_TIMEOUT_MS = 5 * 60 * 1000; // Allow up to 5 minutes for slow AI providers
 
 export default function IngredientsPage() {
   const [ingredients, setIngredients] = useState<string[]>([]);
@@ -158,7 +159,7 @@ export default function IngredientsPage() {
         if (!controller.signal.aborted) {
           controller.abort('Request timeout');
         }
-      }, 120000); // 2分钟超时
+      }, GENERATE_RECIPE_TIMEOUT_MS);
 
       setStoryflowSteps(buildStoryflowSteps(2));
 

@@ -153,7 +153,8 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
   // 自动保存API密钥
   const autoSaveAPIKeys = async () => {
     try {
-      const keysToStore: StoredAPIKeys = {};
+      const existingKeys = getStoredAPIKeys();
+      const keysToStore: StoredAPIKeys = { ...existingKeys };
 
       PROVIDER_KEYS.forEach((provider) => {
         const state = providers[provider];
@@ -161,13 +162,29 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
           return;
         }
 
-        if (state.apiKey.trim()) {
+        const trimmedKey = state.apiKey.trim();
+
+        if (trimmedKey) {
           setStoredProviderKey(keysToStore, provider, state.apiKey.trim());
           if (provider === 'doubao' && state.endpointId?.trim()) {
             keysToStore.doubaoEndpointId = state.endpointId.trim();
+          } else if (provider === 'doubao' && !state.endpointId?.trim()) {
+            delete keysToStore.doubaoEndpointId;
           }
           if (provider === 'seedream' && state.modelId?.trim()) {
             keysToStore.seedreamModelId = state.modelId.trim();
+          } else if (provider === 'seedream' && !state.modelId?.trim()) {
+            delete keysToStore.seedreamModelId;
+          }
+        } else {
+          if (provider === 'doubao') {
+            delete keysToStore.doubao;
+            delete keysToStore.doubaoEndpointId;
+          } else if (provider === 'seedream') {
+            delete keysToStore.seedream;
+            delete keysToStore.seedreamModelId;
+          } else {
+            delete keysToStore[provider];
           }
         }
       });
@@ -488,9 +505,10 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
                                 error: null
                               });
                             }}
-                            onBlur={() => {
-                              if (state.apiKey.trim()) {
-                                validateAPIKey(provider, state.apiKey);
+                            onBlur={(e) => {
+                              const nextValue = e.target.value;
+                              if (nextValue.trim()) {
+                                validateAPIKey(provider, nextValue);
                               }
                             }}
                             className="pr-20"
@@ -646,9 +664,9 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
                                 error: null
                               });
                             }}
-                            onBlur={() => {
-                              const trimmedKey = state.apiKey.trim();
-                              const trimmedModel = state.modelId?.trim();
+                            onBlur={(e) => {
+                              const trimmedKey = e.target.value.trim();
+                              const trimmedModel = (state.modelId || '').trim();
                               if (trimmedKey && trimmedModel) {
                                 validateAPIKey(provider, trimmedKey, {
                                   seedreamModelId: trimmedModel
@@ -943,15 +961,16 @@ export function APISettingsModal({ isOpen, onClose, onKeysUpdated }: APISettings
                           placeholder={`输入${info.name}的API密钥`}
                           value={state.apiKey}
                           onChange={(e) => {
-                            updateProvider(provider, { 
+                            updateProvider(provider, {
                               apiKey: e.target.value,
                               isValid: null,
-                              error: null 
+                              error: null
                             });
                           }}
-                          onBlur={() => {
-                            if (state.apiKey.trim()) {
-                              validateAPIKey(provider, state.apiKey);
+                          onBlur={(e) => {
+                            const nextValue = e.target.value;
+                            if (nextValue.trim()) {
+                              validateAPIKey(provider, nextValue);
                             }
                           }}
                           className="pr-20"

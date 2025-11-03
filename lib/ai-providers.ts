@@ -3,6 +3,26 @@ import { getStoredAPIKeys, type StoredAPIKeys } from './api-key-storage';
 import { getSecureEnvVar, log } from './cloudflare-utils';
 import { createDoubaoVisionClient, IngredientRecognitionResult } from './doubao-vision';
 
+const FIVE_MINUTES_IN_MS = 5 * 60 * 1000;
+
+function parseTimeout(value: string | undefined, fallback: number): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+const DEFAULT_PROVIDER_TIMEOUT_MS = parseTimeout(
+  process.env.RECIPE_PROVIDER_TIMEOUT_MS,
+  FIVE_MINUTES_IN_MS
+);
+const GEMINI_TIMEOUT_MS = parseTimeout(
+  process.env.RECIPE_PROVIDER_TIMEOUT_GEMINI_MS,
+  DEFAULT_PROVIDER_TIMEOUT_MS
+);
+const QWEN_TIMEOUT_MS = parseTimeout(
+  process.env.RECIPE_PROVIDER_TIMEOUT_QWEN_MS,
+  DEFAULT_PROVIDER_TIMEOUT_MS
+);
+
 // AI提供商配置
 export interface AIProvider {
   name: string;
@@ -73,6 +93,52 @@ function omitFrontendApiKey(frontendApiKeys: FrontendApiKeys | undefined, provid
   }
 
   return updated;
+}
+
+function getProviderTimeoutMs(providerName: string): number {
+  switch (providerName) {
+    case 'gemini':
+      return GEMINI_TIMEOUT_MS;
+    case 'qwen':
+      return QWEN_TIMEOUT_MS;
+    default:
+      return DEFAULT_PROVIDER_TIMEOUT_MS;
+  }
+}
+
+function isAbortError(error: unknown): boolean {
+  if (!error) {
+    return false;
+  }
+
+  if (typeof DOMException !== 'undefined' && error instanceof DOMException) {
+    return error.name === 'AbortError';
+  }
+
+  if (error instanceof Error) {
+    if (error.name === 'AbortError') {
+      return true;
+    }
+    if (typeof error.message === 'string' && error.message.toLowerCase().includes('aborted')) {
+      return true;
+    }
+  }
+
+  if (typeof error === 'object' && 'name' in (error as Record<string, unknown>)) {
+    const name = (error as { name?: unknown }).name;
+    if (typeof name === 'string' && name === 'AbortError') {
+      return true;
+    }
+  }
+
+  if (typeof error === 'object' && 'message' in (error as Record<string, unknown>)) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === 'string' && message.toLowerCase().includes('aborted')) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 // 获取可用的AI提供商（支持前端动态API密钥和Cloudflare Workers）
@@ -260,6 +326,9 @@ async function executeAICall(providers: AIProvider[], prompt: string, frontendAp
     throw new Error('没有可用的AI提供商');
   }
 
+  const timeoutMs = getProviderTimeoutMs(selectedProvider.name);
+  const timeoutSeconds = Math.round(timeoutMs / 1000);
+
   try {
     if (selectedProvider.name === 'gemini') {
       const requestBody = {
@@ -268,11 +337,12 @@ async function executeAICall(providers: AIProvider[], prompt: string, frontendAp
         }],
       };
 
+      console.log(`🧠 调用 Gemini API，超时阈值 ${timeoutSeconds} 秒`);
       const response = await fetch(`${selectedProvider.baseUrl}?key=${selectedProvider.apiKey}`, {
         method: 'POST',
         headers: selectedProvider.headers,
         body: JSON.stringify(requestBody),
-        signal: AbortSignal.timeout(60000),
+        signal: AbortSignal.timeout(timeoutMs),
       });
 
       const responseData = await response.json() as GeminiAPIResponse;
@@ -295,11 +365,12 @@ async function executeAICall(providers: AIProvider[], prompt: string, frontendAp
         },
       };
 
+      console.log(`🧠 调用 通义千问 API，超时阈值 ${timeoutSeconds} 秒`);
       const response = await fetch(selectedProvider.baseUrl, {
         method: 'POST',
         headers: selectedProvider.headers,
         body: JSON.stringify(requestBody),
-        signal: AbortSignal.timeout(30000),
+        signal: AbortSignal.timeout(timeoutMs),
       });
 
       const responseData = await response.json() as QwenAPIResponse;
@@ -317,11 +388,12 @@ async function executeAICall(providers: AIProvider[], prompt: string, frontendAp
       max_tokens: 2000,
     };
 
+    console.log(`🧠 调用 ${selectedProvider.name} API，超时阈值 ${timeoutSeconds} 秒`);
     const response = await fetch(selectedProvider.baseUrl, {
       method: 'POST',
       headers: selectedProvider.headers,
       body: JSON.stringify(requestBody),
-      signal: AbortSignal.timeout(60000),
+      signal: AbortSignal.timeout(timeoutMs),
     });
 
     const responseData = await response.json() as OpenAIStyleResponse;
@@ -340,7 +412,20 @@ async function executeAICall(providers: AIProvider[], prompt: string, frontendAp
       return executeAICall(remainingProviders, prompt, updatedKeys);
     }
 
-    throw error;
+    const abortTriggered =
+      isAbortError(error) ||
+      (error instanceof Error && isAbortError((error as Error & { cause?: unknown }).cause));
+
+    if (abortTriggered) {
+      throw new Error(
+        `${selectedProvider.name} API 请求在 ${timeoutSeconds} 秒后超时`,
+        error instanceof Error ? { cause: error } : undefined
+      );
+    }
+
+    throw error instanceof Error
+      ? new Error(`${selectedProvider.name} API 请求失败: ${error.message}`, { cause: error })
+      : error;
   }
 }
 
