@@ -26,6 +26,7 @@
 - Fixed sensitive ingredient issues for gout patients / 解决了痛风患者的敏感食材问题
 - Update valid AI key in settings if needed / 请更新有效的AI密钥，或者在设置中配置
 - Switching between multiple servers may cause anomalies / 在多个服务器之间切换，可能会出现异常
+- 最新版本已优化食材上传与菜谱生成界面，建议刷新浏览器缓存后体验 / 最新版本优化了食材上传与菜谱生成界面，建议刷新浏览器缓存后体验
 
 ## 💻 Technology Stack / 技术支持
 
